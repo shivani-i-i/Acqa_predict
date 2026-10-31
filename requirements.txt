@@ -1,4 +1,19 @@
-# Minimal Vercel serverless requirements.
-# The complete local stack is in requirements-full.txt.
+# Full local AquaPredict stack: simulator, ML pipeline, evaluation, API, and Streamlit.
+# Install this file for local development and the complete application.
+numpy>=1.26,<3
+pandas>=2.1,<4
+scikit-learn>=1.4,<2
+scipy>=1.11,<2
+joblib>=1.3,<2
+matplotlib>=3.7
 fastapi>=0.110,<1
+uvicorn>=0.27,<1
+httpx>=0.27,<1
 pydantic>=2.5,<3
+streamlit>=1.35,<2
+pytest>=8.0,<10
+
+# OPTIONAL: SHAP explanations for driver output.
+# pip install shap
+# OPTIONAL: parquet output (CSV is used automatically if missing).
+# pip install pyarrow
