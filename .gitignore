@@ -1,0 +1,17 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+*.egg-info/
+.vscode/
+# generated outputs
+results/
+results_*/
+data/
+aquapredict/forecasting/examples/data/
+aquapredict/forecasting/artifacts/*.joblib
+*.joblib
+aquapredict_app_data/
+*.db
+*.sqlite
+*.sqlite3

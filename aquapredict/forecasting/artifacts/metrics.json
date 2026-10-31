@@ -1,0 +1,323 @@
+{
+  "DATA_ORIGIN": "SYNTHETIC - simulator output, not real telemetry",
+  "seed": 42,
+  "split_policy": "whole households: train / calibration / development / test; test evaluated once here",
+  "rows": {
+    "train": 16142,
+    "calibration": 6820,
+    "development": 4272,
+    "test": 8134
+  },
+  "households": {
+    "train": 54,
+    "calibration": 24,
+    "development": 18,
+    "test": 24
+  },
+  "replacement_criterion": "simulator replaces at 80 % of nominal capacity consumed (= 20 % proxy health left)",
+  "baseline_config": {
+    "health_replace_threshold": 0.2,
+    "volume_rule_fraction": 0.8,
+    "nominal_daily_litres": 60.0
+  },
+  "interval_method": "per-stage scaled split conformal",
+  "interval_calibration_households": 42,
+  "conformal_quantile": 0.33484432717052676,
+  "n_calibration": 11092,
+  "test_comparison": {
+    "gradient_boosting": {
+      "n": 8134,
+      "mae_days": 19.317702269428228,
+      "median_ae_days": 8.824044975072457,
+      "rmse_days": 35.234586819295856
+    },
+    "volume_rule": {
+      "n": 8134,
+      "mae_days": 55.44100282529475,
+      "median_ae_days": 28.61111603532736,
+      "rmse_days": 88.58408207929928
+    },
+    "health_threshold_proxy": {
+      "n": 8131,
+      "mae_days": 47.54990967391482,
+      "median_ae_days": 25.457876804147872,
+      "rmse_days": 72.20642901814156
+    },
+    "trend_extrapolation": {
+      "n": 8131,
+      "mae_days": 48.96116367586211,
+      "median_ae_days": 27.576606933213704,
+      "rmse_days": 73.60982661540153
+    }
+  },
+  "test_comparison_last_30_days_of_life": {
+    "gradient_boosting": {
+      "n": 2215,
+      "mae_days": 4.657112903321383,
+      "median_ae_days": 3.0192434168760705,
+      "rmse_days": 7.798185934125756
+    },
+    "volume_rule": {
+      "n": 2215,
+      "mae_days": 18.082849951072046,
+      "median_ae_days": 14.541718361550888,
+      "rmse_days": 23.523899870894486
+    },
+    "health_threshold_proxy": {
+      "n": 2215,
+      "mae_days": 20.988187423925453,
+      "median_ae_days": 13.361289863602385,
+      "rmse_days": 31.33037508665543
+    },
+    "trend_extrapolation": {
+      "n": 2215,
+      "mae_days": 21.278242004906257,
+      "median_ae_days": 13.0,
+      "rmse_days": 32.96676670009783
+    }
+  },
+  "test_alerting": {
+    "horizon_14d": {
+      "gradient_boosting": {
+        "n_lives": 72,
+        "late_warning_rate": 0.06944444444444445,
+        "false_alarm_rate": 0.027777777777777776,
+        "on_time_rate": 0.9027777777777778,
+        "no_alert_rate": 0.013888888888888888,
+        "median_lead_days": 13.0,
+        "p10_lead_days": 9.0,
+        "false_alarm_row_rate": 0.000825218682950982,
+        "late_row_rate": 0.0642361111111111,
+        "definition": {
+          "alert_horizon_days": 14.0,
+          "min_lead_days": 7.0,
+          "max_early_days": 28.0
+        }
+      },
+      "volume_rule": {
+        "n_lives": 72,
+        "late_warning_rate": 0.4861111111111111,
+        "false_alarm_rate": 0.2222222222222222,
+        "on_time_rate": 0.2916666666666667,
+        "no_alert_rate": 0.3472222222222222,
+        "median_lead_days": 21.0,
+        "p10_lead_days": 3.200000000000001,
+        "false_alarm_row_rate": 0.15283050008252186,
+        "late_row_rate": 0.421875,
+        "definition": {
+          "alert_horizon_days": 14.0,
+          "min_lead_days": 7.0,
+          "max_early_days": 28.0
+        }
+      },
+      "health_threshold_proxy": {
+        "n_lives": 72,
+        "late_warning_rate": 0.4861111111111111,
+        "false_alarm_rate": 0.2222222222222222,
+        "on_time_rate": 0.2916666666666667,
+        "no_alert_rate": 0.3194444444444444,
+        "median_lead_days": 19.0,
+        "p10_lead_days": 3.6000000000000014,
+        "false_alarm_row_rate": 0.13665621389668262,
+        "late_row_rate": 0.3940972222222222,
+        "definition": {
+          "alert_horizon_days": 14.0,
+          "min_lead_days": 7.0,
+          "max_early_days": 28.0
+        }
+      },
+      "trend_extrapolation": {
+        "n_lives": 72,
+        "late_warning_rate": 0.4583333333333333,
+        "false_alarm_rate": 0.2361111111111111,
+        "on_time_rate": 0.3055555555555556,
+        "no_alert_rate": 0.3333333333333333,
+        "median_lead_days": 19.0,
+        "p10_lead_days": 4.7,
+        "false_alarm_row_rate": 0.13500577653078066,
+        "late_row_rate": 0.4010416666666667,
+        "definition": {
+          "alert_horizon_days": 14.0,
+          "min_lead_days": 7.0,
+          "max_early_days": 28.0
+        }
+      }
+    },
+    "horizon_30d": {
+      "gradient_boosting": {
+        "n_lives": 72,
+        "late_warning_rate": 0.027777777777777776,
+        "false_alarm_rate": 0.0,
+        "on_time_rate": 0.9722222222222222,
+        "no_alert_rate": 0.0,
+        "median_lead_days": 31.0,
+        "p10_lead_days": 22.0,
+        "false_alarm_row_rate": 0.0,
+        "late_row_rate": 0.013888888888888888,
+        "definition": {
+          "alert_horizon_days": 30.0,
+          "min_lead_days": 15.0,
+          "max_early_days": 60.0
+        }
+      },
+      "volume_rule": {
+        "n_lives": 72,
+        "late_warning_rate": 0.4027777777777778,
+        "false_alarm_rate": 0.18055555555555555,
+        "on_time_rate": 0.4166666666666667,
+        "no_alert_rate": 0.125,
+        "median_lead_days": 30.0,
+        "p10_lead_days": 4.2,
+        "false_alarm_row_rate": 0.21110838043745392,
+        "late_row_rate": 0.265625,
+        "definition": {
+          "alert_horizon_days": 30.0,
+          "min_lead_days": 15.0,
+          "max_early_days": 60.0
+        }
+      },
+      "health_threshold_proxy": {
+        "n_lives": 72,
+        "late_warning_rate": 0.3194444444444444,
+        "false_alarm_rate": 0.16666666666666666,
+        "on_time_rate": 0.5138888888888888,
+        "no_alert_rate": 0.16666666666666666,
+        "median_lead_days": 30.5,
+        "p10_lead_days": 9.700000000000001,
+        "false_alarm_row_rate": 0.15654952076677317,
+        "late_row_rate": 0.23958333333333334,
+        "definition": {
+          "alert_horizon_days": 30.0,
+          "min_lead_days": 15.0,
+          "max_early_days": 60.0
+        }
+      },
+      "trend_extrapolation": {
+        "n_lives": 72,
+        "late_warning_rate": 0.2777777777777778,
+        "false_alarm_rate": 0.18055555555555555,
+        "on_time_rate": 0.5416666666666666,
+        "no_alert_rate": 0.1388888888888889,
+        "median_lead_days": 32.0,
+        "p10_lead_days": 8.200000000000001,
+        "false_alarm_row_rate": 0.15605799950847873,
+        "late_row_rate": 0.2404513888888889,
+        "definition": {
+          "alert_horizon_days": 30.0,
+          "min_lead_days": 15.0,
+          "max_early_days": 60.0
+        }
+      }
+    }
+  },
+  "test_interval_coverage": {
+    "available": true,
+    "target_coverage": 0.9,
+    "interval_method": "per-stage scaled split conformal",
+    "empirical_coverage": 0.8616916646176543,
+    "mean_interval_width_days": 67.6588237408213,
+    "n_test_rows": 8134,
+    "n_rows_without_interval": 0,
+    "by_stage": {
+      "carbon": {
+        "n": 2682,
+        "empirical_coverage": 0.8292319164802386,
+        "mean_interval_width_days": 45.65931731870318
+      },
+      "ro_membrane": {
+        "n": 3561,
+        "empirical_coverage": 0.884863802302724,
+        "mean_interval_width_days": 98.65526291165727
+      },
+      "sediment": {
+        "n": 1891,
+        "empirical_coverage": 0.86409307244844,
+        "mean_interval_width_days": 40.49031836629669
+      }
+    },
+    "by_true_remaining_bucket": {
+      "<=30 d left": {
+        "n": 2215,
+        "empirical_coverage": 0.9173814898419864,
+        "mean_interval_width_days": 20.388806230395854
+      },
+      "31-90 d left": {
+        "n": 3169,
+        "empirical_coverage": 0.9084884821710318,
+        "mean_interval_width_days": 49.26737749153014
+      },
+      ">90 d left": {
+        "n": 2750,
+        "empirical_coverage": 0.7629090909090909,
+        "mean_interval_width_days": 126.92630808612903
+      }
+    },
+    "overall_coverage_household_bootstrap_90pct_range": [
+      0.815476817292136,
+      0.9082658443759613
+    ],
+    "household_coverage": {
+      "n_households": 24,
+      "min": 0.5940298507462687,
+      "p10": 0.7579640459172623,
+      "median": 0.9200842338126436,
+      "share_at_or_above_target_minus_10pts": 0.8333333333333334
+    },
+    "note": "SYNTHETIC test households; coverage is not guaranteed on future/real data."
+  },
+  "input_drift_train_vs_test": {
+    "kind": "input_drift",
+    "features": {
+      "cum_usage_litres": {
+        "status": "ok",
+        "psi": 0.006326849271790015,
+        "ks_statistic": 0.032815581848785635,
+        "ks_pvalue": 1.702981380933827e-05,
+        "drifted": false
+      },
+      "usage_mean_7d": {
+        "status": "ok",
+        "psi": 0.17019650148967025,
+        "ks_statistic": 0.18105300825227738,
+        "ks_pvalue": 1.2727719285214462e-155,
+        "drifted": false
+      },
+      "tds_in": {
+        "status": "ok",
+        "psi": 0.47008390320363985,
+        "ks_statistic": 0.1506854280986915,
+        "ks_pvalue": 5.949321608716102e-105,
+        "drifted": true
+      },
+      "pressure": {
+        "status": "ok",
+        "psi": 0.1017484528674369,
+        "ks_statistic": 0.09737827799492105,
+        "ks_pvalue": 2.38063889686823e-41,
+        "drifted": false
+      }
+    },
+    "drifted_features": [
+      "tds_in"
+    ],
+    "any_drift": true,
+    "status": "ok",
+    "note": "Input drift is a warning sign only; it does not prove worse predictions."
+  },
+  "monitoring": {
+    "input_drift_detected": true,
+    "performance_degradation_confirmed": false,
+    "performance_evidence_available": true,
+    "note": "Local batch prototype; no real-time monitoring service exists."
+  },
+  "environment": {
+    "python": "3.13.17",
+    "numpy": "2.5.3",
+    "pandas": "3.0.5",
+    "scikit-learn": "1.9.1",
+    "scipy": "1.18.1",
+    "joblib": "1.6.0",
+    "shap": null
+  },
+  "run_id": "94adb330a5ad"
+}

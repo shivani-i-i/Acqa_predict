@@ -1,0 +1,156 @@
+{
+  "DATA_ORIGIN": "SYNTHETIC",
+  "households_in_pool": 96,
+  "resplit_sizes_households": {
+    "train": 54,
+    "calibration": 24,
+    "evaluation": 18
+  },
+  "repeats": 12,
+  "evaluated_on": "non-test households only (test households never loaded)",
+  "target_coverage": 0.9,
+  "selection_rule": "mean coverage >= target - 0.01 AND every stage's mean coverage >= target - 0.03, then smallest mean width (rule v2, see script docstring)",
+  "variants": {
+    "pooled_absolute": {
+      "mean_coverage": 0.8948567857709553,
+      "sd_coverage": 0.056491772429494026,
+      "min_coverage": 0.7873724678397162,
+      "max_coverage": 0.9827070879590094,
+      "share_of_repeats_at_or_above_target": 0.5,
+      "mean_width_days": 82.48882127531854,
+      "mean_coverage_by_stage": {
+        "carbon": 0.9166972677443009,
+        "ro_membrane": 0.8408567197836613,
+        "sediment": 0.9604718444235042
+      },
+      "mean_width_by_stage_days": {
+        "carbon": 82.5029519068372,
+        "ro_membrane": 84.84385536455359,
+        "sediment": 78.39678964219537
+      },
+      "mean_coverage_by_true_remaining_bucket": {
+        "<=30 d left": 0.9951936314657749,
+        "31-90 d left": 0.9740798850670389,
+        ">90 d left": 0.6427080919781814
+      },
+      "mean_width_by_true_remaining_bucket_days": {
+        "<=30 d left": 64.70502560961278,
+        "31-90 d left": 89.73616857936888,
+        ">90 d left": 94.30436243462633
+      }
+    },
+    "per_stage_absolute": {
+      "mean_coverage": 0.8948603559642669,
+      "sd_coverage": 0.05919535133625874,
+      "min_coverage": 0.7838237468579033,
+      "max_coverage": 0.9827070879590094,
+      "share_of_repeats_at_or_above_target": 0.5,
+      "mean_width_days": 86.9282792882431,
+      "mean_coverage_by_stage": {
+        "carbon": 0.8949363410766455,
+        "ro_membrane": 0.8869008073236504,
+        "sediment": 0.9106088975809827
+      },
+      "mean_width_by_stage_days": {
+        "carbon": 72.4123371677825,
+        "ro_membrane": 116.7062366812034,
+        "sediment": 55.115664620660965
+      },
+      "mean_coverage_by_true_remaining_bucket": {
+        "<=30 d left": 0.9928478139665211,
+        "31-90 d left": 0.9570622262481209,
+        ">90 d left": 0.6786630943429182
+      },
+      "mean_width_by_true_remaining_bucket_days": {
+        "<=30 d left": 64.0962720340924,
+        "31-90 d left": 90.04997593794839,
+        ">90 d left": 113.30040220060853
+      }
+    },
+    "pooled_scaled": {
+      "mean_coverage": 0.8999947830702687,
+      "sd_coverage": 0.04787399496400046,
+      "min_coverage": 0.8034895756321159,
+      "max_coverage": 0.9704968944099379,
+      "share_of_repeats_at_or_above_target": 0.4166666666666667,
+      "mean_width_days": 68.05993989554473,
+      "mean_coverage_by_stage": {
+        "carbon": 0.9164252160302486,
+        "ro_membrane": 0.8689723939741972,
+        "sediment": 0.9346907966246873
+      },
+      "mean_width_by_stage_days": {
+        "carbon": 65.79280600191807,
+        "ro_membrane": 80.85471296795279,
+        "sediment": 49.27922714356242
+      },
+      "mean_coverage_by_true_remaining_bucket": {
+        "<=30 d left": 0.9714148675876572,
+        "31-90 d left": 0.9512101127187708,
+        ">90 d left": 0.7330951456950073
+      },
+      "mean_width_by_true_remaining_bucket_days": {
+        "<=30 d left": 27.398346835032523,
+        "31-90 d left": 65.2309668560976,
+        ">90 d left": 127.10061863778229
+      }
+    },
+    "per_stage_scaled": {
+      "mean_coverage": 0.9007299906704818,
+      "sd_coverage": 0.045030857063631254,
+      "min_coverage": 0.8091083838533195,
+      "max_coverage": 0.9769668737060041,
+      "share_of_repeats_at_or_above_target": 0.5,
+      "mean_width_days": 70.33061291687608,
+      "mean_coverage_by_stage": {
+        "carbon": 0.9053507868435687,
+        "ro_membrane": 0.8938397355852493,
+        "sediment": 0.9084596447500499
+      },
+      "mean_width_by_stage_days": {
+        "carbon": 61.843619075269004,
+        "ro_membrane": 91.80455421378109,
+        "sediment": 44.55307452192574
+      },
+      "mean_coverage_by_true_remaining_bucket": {
+        "<=30 d left": 0.9652130817603893,
+        "31-90 d left": 0.942319930235128,
+        ">90 d left": 0.7578910010637941
+      },
+      "mean_width_by_true_remaining_bucket_days": {
+        "<=30 d left": 26.976993281442745,
+        "31-90 d left": 65.85741241807933,
+        ">90 d left": 135.5096857998018
+      }
+    },
+    "pooled_scaled_level_0.93": {
+      "mean_coverage": 0.9279476947241149,
+      "sd_coverage": 0.04115611880658634,
+      "min_coverage": 0.8420819163093302,
+      "max_coverage": 0.9862836438923396,
+      "share_of_repeats_at_or_above_target": 0.75,
+      "mean_width_days": 79.00402886141816,
+      "mean_coverage_by_stage": {
+        "carbon": 0.9398046490091799,
+        "ro_membrane": 0.9049503457542437,
+        "sediment": 0.954845476319123
+      },
+      "mean_width_by_stage_days": {
+        "carbon": 76.34732251385545,
+        "ro_membrane": 93.95146496044835,
+        "sediment": 57.07913241111271
+      },
+      "mean_coverage_by_true_remaining_bucket": {
+        "<=30 d left": 0.9818359709388195,
+        "31-90 d left": 0.971679677093491,
+        ">90 d left": 0.7969496613727877
+      },
+      "mean_width_by_true_remaining_bucket_days": {
+        "<=30 d left": 31.289023845976107,
+        "31-90 d left": 75.89283202638624,
+        ">90 d left": 147.8361655376244
+      }
+    }
+  },
+  "chosen_variant": "per_stage_scaled"
+}

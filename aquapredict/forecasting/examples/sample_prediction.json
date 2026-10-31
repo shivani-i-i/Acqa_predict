@@ -1,0 +1,272 @@
+{
+  "DATA_ORIGIN": "SYNTHETIC",
+  "model_run_id": "94adb330a5ad",
+  "note": "scenario 1 true remaining_days (hidden from the model) = 28.0",
+  "1_normal": {
+    "filter_stage": "ro_membrane",
+    "household_id": "H006",
+    "forecast_days": 24.0,
+    "interval_days": [
+      8.2,
+      39.8
+    ],
+    "drivers": [],
+    "explanation": {
+      "available": false,
+      "method": null,
+      "summary": null,
+      "reason": "shap is not installed (optional); explanations unavailable",
+      "base_value_days": null,
+      "additivity_gap_days": null
+    },
+    "fault_events": [
+      {
+        "type": "missing_reading",
+        "severity": "warning",
+        "message": "tds_out: latest reading is missing",
+        "timestamp": "2026-03-01T00:00:00",
+        "sensor": "tds_out",
+        "value": null
+      }
+    ],
+    "source_change": {
+      "evaluated": true,
+      "detected": false,
+      "direction": null,
+      "alarm_index": null,
+      "change_index": null,
+      "alarm_timestamp": null,
+      "change_timestamp": null,
+      "baseline_mean": 271.51631484270445,
+      "message": "No persistent shift detected."
+    },
+    "status": "ok",
+    "reason": null,
+    "disclaimer": "Prototype trained on SYNTHETIC data; not validated for real purifier maintenance decisions."
+  },
+  "2_required_reading_missing": {
+    "filter_stage": "ro_membrane",
+    "household_id": "H006",
+    "forecast_days": null,
+    "interval_days": null,
+    "drivers": [],
+    "explanation": {
+      "available": false,
+      "method": null,
+      "summary": null,
+      "reason": "no explanation (forecast withheld)",
+      "base_value_days": null,
+      "additivity_gap_days": null
+    },
+    "fault_events": [
+      {
+        "type": "missing_reading",
+        "severity": "critical",
+        "message": "usage_litres: latest reading is missing (REQUIRED sensor)",
+        "timestamp": "2026-03-01T00:00:00",
+        "sensor": "usage_litres",
+        "value": null
+      },
+      {
+        "type": "missing_reading",
+        "severity": "warning",
+        "message": "tds_out: latest reading is missing",
+        "timestamp": "2026-03-01T00:00:00",
+        "sensor": "tds_out",
+        "value": null
+      }
+    ],
+    "source_change": {
+      "evaluated": true,
+      "detected": false,
+      "direction": null,
+      "alarm_index": null,
+      "change_index": null,
+      "alarm_timestamp": null,
+      "change_timestamp": null,
+      "baseline_mean": 271.51631484270445,
+      "message": "No persistent shift detected."
+    },
+    "status": "withheld",
+    "reason": "Forecast withheld - missing_reading: usage_litres: latest reading is missing (REQUIRED sensor)",
+    "disclaimer": "Prototype trained on SYNTHETIC data; not validated for real purifier maintenance decisions."
+  },
+  "3_value_outside_training_range": {
+    "filter_stage": "ro_membrane",
+    "household_id": "H006",
+    "forecast_days": null,
+    "interval_days": null,
+    "drivers": [],
+    "explanation": {
+      "available": false,
+      "method": null,
+      "summary": null,
+      "reason": "no explanation (forecast withheld)",
+      "base_value_days": null,
+      "additivity_gap_days": null
+    },
+    "fault_events": [
+      {
+        "type": "missing_reading",
+        "severity": "warning",
+        "message": "tds_out: latest reading is missing",
+        "timestamp": "2026-03-01T00:00:00",
+        "sensor": "tds_out",
+        "value": null
+      },
+      {
+        "type": "spike",
+        "severity": "warning",
+        "message": "tds_in=4000 deviates from recent median 270.168 (robust z=690.3 > 6)",
+        "timestamp": "2026-03-01T00:00:00",
+        "sensor": "tds_in",
+        "value": 4000.0
+      }
+    ],
+    "source_change": {
+      "evaluated": true,
+      "detected": false,
+      "direction": null,
+      "alarm_index": null,
+      "change_index": null,
+      "alarm_timestamp": null,
+      "change_timestamp": null,
+      "baseline_mean": 271.51631484270445,
+      "message": "No persistent shift detected."
+    },
+    "status": "withheld",
+    "reason": "Forecast withheld - conditions outside the model's training support: tds_in=4e+03 outside training range [98.9, 1.16e+03]",
+    "disclaimer": "Prototype trained on SYNTHETIC data; not validated for real purifier maintenance decisions."
+  },
+  "4_flatline_warning_still_forecasts": {
+    "filter_stage": "ro_membrane",
+    "household_id": "H006",
+    "forecast_days": 24.0,
+    "interval_days": [
+      8.2,
+      39.8
+    ],
+    "drivers": [],
+    "explanation": {
+      "available": false,
+      "method": null,
+      "summary": null,
+      "reason": "shap is not installed (optional); explanations unavailable",
+      "base_value_days": null,
+      "additivity_gap_days": null
+    },
+    "fault_events": [
+      {
+        "type": "missing_reading",
+        "severity": "warning",
+        "message": "tds_out: latest reading is missing",
+        "timestamp": "2026-03-01T00:00:00",
+        "sensor": "tds_out",
+        "value": null
+      },
+      {
+        "type": "flatline",
+        "severity": "warning",
+        "message": "pressure: identical value 2 for the last 12 readings (a stable sensor can be legitimate; check the hardware)",
+        "timestamp": "2026-03-01T00:00:00",
+        "sensor": "pressure",
+        "value": 2.0
+      }
+    ],
+    "source_change": {
+      "evaluated": true,
+      "detected": false,
+      "direction": null,
+      "alarm_index": null,
+      "change_index": null,
+      "alarm_timestamp": null,
+      "change_timestamp": null,
+      "baseline_mean": 271.51631484270445,
+      "message": "No persistent shift detected."
+    },
+    "status": "ok",
+    "reason": null,
+    "disclaimer": "Prototype trained on SYNTHETIC data; not validated for real purifier maintenance decisions."
+  },
+  "5_possible_source_change": {
+    "filter_stage": "ro_membrane",
+    "household_id": "H006",
+    "forecast_days": 20.5,
+    "interval_days": [
+      6.2,
+      34.9
+    ],
+    "drivers": [],
+    "explanation": {
+      "available": false,
+      "method": null,
+      "summary": null,
+      "reason": "shap is not installed (optional); explanations unavailable",
+      "base_value_days": null,
+      "additivity_gap_days": null
+    },
+    "fault_events": [
+      {
+        "type": "missing_reading",
+        "severity": "warning",
+        "message": "tds_out: latest reading is missing",
+        "timestamp": "2026-03-01T00:00:00",
+        "sensor": "tds_out",
+        "value": null
+      }
+    ],
+    "source_change": {
+      "evaluated": true,
+      "detected": true,
+      "direction": "up",
+      "alarm_index": 38,
+      "change_index": 34,
+      "alarm_timestamp": "2026-02-08T00:00:00",
+      "change_timestamp": "2026-02-04T00:00:00",
+      "baseline_mean": 271.51631484270445,
+      "message": "Possible source or operating-condition change (statistical signal only; not proof that the water source changed). Sustained upward shift in the signal (baseline mean 271.5)."
+    },
+    "status": "ok",
+    "reason": null,
+    "disclaimer": "Prototype trained on SYNTHETIC data; not validated for real purifier maintenance decisions."
+  },
+  "6_unknown_filter_stage": {
+    "filter_stage": "uv_lamp",
+    "household_id": "H006",
+    "forecast_days": null,
+    "interval_days": null,
+    "drivers": [],
+    "explanation": {
+      "available": false,
+      "method": null,
+      "summary": null,
+      "reason": "no explanation (forecast withheld)",
+      "base_value_days": null,
+      "additivity_gap_days": null
+    },
+    "fault_events": [
+      {
+        "type": "missing_reading",
+        "severity": "warning",
+        "message": "tds_out: latest reading is missing",
+        "timestamp": "2026-03-01T00:00:00",
+        "sensor": "tds_out",
+        "value": null
+      }
+    ],
+    "source_change": {
+      "evaluated": true,
+      "detected": false,
+      "direction": null,
+      "alarm_index": null,
+      "change_index": null,
+      "alarm_timestamp": null,
+      "change_timestamp": null,
+      "baseline_mean": 271.51631484270445,
+      "message": "No persistent shift detected."
+    },
+    "status": "withheld",
+    "reason": "Forecast withheld - conditions outside the model's training support: filter_stage 'uv_lamp' was not seen in training",
+    "disclaimer": "Prototype trained on SYNTHETIC data; not validated for real purifier maintenance decisions."
+  }
+}
