@@ -712,11 +712,38 @@ div[data-testid="stAlert"] [data-testid="stMarkdownContainer"] {
   position: absolute;
   top: 4.1rem;
   left: 50%;
-  width: 10rem;
-  height: 18rem;
+  width: 12rem;
+  height: 19rem;
   transform: translateX(-50%) rotateY(-12deg) rotateX(4deg);
   transform-style: preserve-3d;
   filter: drop-shadow(0 1.8rem 1.2rem rgba(0,0,0,.32));
+}
+
+.ap-twin:before {
+  position: absolute;
+  top: 1.6rem;
+  right: -.65rem;
+  width: 1rem;
+  height: 15.6rem;
+  border: 1px solid rgba(200,214,218,.22);
+  border-left: 0;
+  border-radius: 0 .7rem .7rem 0;
+  background: linear-gradient(90deg, #1d2b32, #0d171d);
+  box-shadow: inset -.3rem 0 .6rem rgba(0,0,0,.28);
+  content: '';
+  transform: translateZ(-.35rem) skewY(-5deg);
+}
+
+.ap-twin:after {
+  position: absolute;
+  right: 1.6rem;
+  bottom: -.9rem;
+  left: 1.6rem;
+  height: 1.1rem;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(0,0,0,.45), transparent 70%);
+  content: '';
+  transform: rotateX(70deg);
 }
 
 .ap-twin__body {
@@ -742,6 +769,19 @@ div[data-testid="stAlert"] [data-testid="stMarkdownContainer"] {
   transform: translateZ(.4rem);
 }
 
+.ap-twin__lid:after {
+  position: absolute;
+  top: -.35rem;
+  left: 50%;
+  width: 2rem;
+  height: .3rem;
+  border-radius: .3rem;
+  background: #27343a;
+  box-shadow: inset 0 1px rgba(255,255,255,.18);
+  content: '';
+  transform: translateX(-50%);
+}
+
 .ap-twin__badge {
   position: absolute;
   top: 4.25rem;
@@ -765,6 +805,46 @@ div[data-testid="stAlert"] [data-testid="stMarkdownContainer"] {
   transform: translateZ(.9rem);
 }
 
+.ap-twin__display {
+  position: absolute;
+  top: 1.65rem;
+  left: 1.25rem;
+  width: 3.2rem;
+  height: 1rem;
+  border: 1px solid rgba(190,224,218,.25);
+  border-radius: .25rem;
+  background: #15292b;
+  box-shadow: inset 0 0 .4rem rgba(0,0,0,.5);
+  transform: translateZ(1.35rem);
+}
+
+.ap-twin__display:after {
+  position: absolute;
+  top: .27rem;
+  right: .35rem;
+  left: .35rem;
+  height: .2rem;
+  border-radius: .2rem;
+  background: linear-gradient(90deg, #8cc9bd 0 62%, #405956 62%);
+  content: '';
+}
+
+.ap-twin__cartridge {
+  position: absolute;
+  bottom: 1.35rem;
+  width: 2.15rem;
+  height: 1.05rem;
+  border: 1px solid rgba(210,223,227,.22);
+  border-radius: .25rem;
+  background: linear-gradient(90deg, #829198, #35434a);
+  box-shadow: inset 0 1px rgba(255,255,255,.18);
+  transform: translateZ(1.15rem);
+}
+
+.ap-twin__cartridge--one { left: 1.35rem; }
+.ap-twin__cartridge--two { left: 4.1rem; }
+.ap-twin__cartridge--three { right: 1.35rem; }
+
 .ap-twin__foot {
   position: absolute;
   bottom: -.2rem;
@@ -777,6 +857,21 @@ div[data-testid="stAlert"] [data-testid="stMarkdownContainer"] {
 
 .ap-twin__foot--left { left: 1.1rem; }
 .ap-twin__foot--right { right: 1.1rem; }
+
+.ap-tube {
+  position: absolute;
+  z-index: 2;
+  width: 4.4rem;
+  height: 2.4rem;
+  border: .22rem solid rgba(130,190,183,.55);
+  border-left-color: transparent;
+  border-bottom-color: transparent;
+  border-radius: 0 1.3rem 0 0;
+  opacity: .8;
+}
+
+.ap-tube--inlet { top: 8.1rem; left: 36%; transform: rotate(12deg); }
+.ap-tube--outlet { top: 15.2rem; right: 34%; transform: rotate(188deg); }
 
 .ap-twin__panel {
   position: absolute;
@@ -978,12 +1073,17 @@ def spatial_twin(D, latest, focus):
         f'<div class="ap-spatial__title">DIGITAL TWIN / FOCUS: {focus_label.upper()}</div>'
         '<div class="ap-twin">'
         '<div class="ap-twin__body"><div class="ap-twin__lid"></div>'
-        '<div class="ap-twin__panel"></div><div class="ap-twin__badge">AQUAPREDICT / AP-01</div>'
+        '<div class="ap-twin__panel"></div><div class="ap-twin__display"></div>'
+        '<div class="ap-twin__badge">AQUAPREDICT / AP-01</div>'
         '<div class="ap-twin__stage ap-twin__stage--one"></div>'
         '<div class="ap-twin__stage ap-twin__stage--two"></div>'
         '<div class="ap-twin__stage ap-twin__stage--three"></div>'
+        '<div class="ap-twin__cartridge ap-twin__cartridge--one"></div>'
+        '<div class="ap-twin__cartridge ap-twin__cartridge--two"></div>'
+        '<div class="ap-twin__cartridge ap-twin__cartridge--three"></div>'
         '<div class="ap-twin__vents"></div><div class="ap-twin__foot ap-twin__foot--left"></div>'
         '<div class="ap-twin__foot ap-twin__foot--right"></div></div>'
+        '<div class="ap-tube ap-tube--inlet"></div><div class="ap-tube ap-tube--outlet"></div></div>'
         '<div class="ap-flow"></div></div>'
         f'<div class="ap-node ap-node--left"><strong>Sediment stage</strong>'
         f'<span>{stage_progress["sediment"]} · pressure flow</span></div>'
