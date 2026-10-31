@@ -1085,6 +1085,54 @@ section[data-testid="stMain"] [data-testid="stHorizontalBlock"]:has(.ap-commandb
   letter-spacing: .08em;
 }
 
+.ap-utilitybar {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: -.35rem -.5rem 0;
+  padding: .38rem 1.1rem;
+  color: #eaf3fb;
+  background: #0c3763;
+  font-size: .68rem;
+}
+
+.ap-utilitybar__left,
+.ap-utilitybar__right {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.ap-utilitybar strong {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.ap-utilitybar span {
+  color: #c9dced;
+}
+
+.ap-brandline {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  color: #15386a;
+  font-size: .78rem;
+  font-weight: 600;
+}
+
+.ap-brandline__rule {
+  width: 1px;
+  height: 1.35rem;
+  background: #d7e2ee;
+}
+
+.ap-brandline__sub {
+  color: #6a7d95;
+  font-size: .68rem;
+  font-weight: 400;
+}
+
 section[data-testid="stMain"] [data-testid="stHorizontalBlock"]:has(.ap-commandbar__brand) [data-testid="stRadio"] label,
 .ap-topnav [data-testid="stRadio"] label {
   min-height: 2.85rem;
@@ -1229,6 +1277,26 @@ h1 { font-size: clamp(1.75rem, 3vw, 2.35rem); }
   border-radius: .45rem;
   background: linear-gradient(110deg, #123f72 0%, #1769aa 58%, #2087bd 100%);
   box-shadow: 0 5px 16px rgba(16, 42, 86, .14);
+}
+
+.ap-hero h1 {
+  letter-spacing: -.035em;
+}
+
+.ap-hero__actions {
+  display: flex;
+  gap: .6rem;
+  margin-top: 1.05rem;
+}
+
+.ap-hero__tag {
+  display: inline-block;
+  padding: .35rem .65rem;
+  border: 1px solid rgba(255,255,255,.35);
+  border-radius: .2rem;
+  color: #ffffff;
+  font-size: .72rem;
+  font-weight: 600;
 }
 
 .ap-hero:after {
@@ -1440,11 +1508,19 @@ if households:
     primary_pages = ["Dashboard", "Filter detail", "Simulator & what-if", "Alerts"]
     if st.session_state["top_page"] not in primary_pages:
         st.session_state["top_page"] = "Dashboard"
+    st.markdown(
+        '<div class="ap-utilitybar">'
+        '<div class="ap-utilitybar__left"><strong>Purifier care centre</strong>'
+        '<span>Monitor your purifier. Plan service with confidence.</span></div>'
+        '<div class="ap-utilitybar__right"><span>Help & support</span><span>About AquaPredict</span></div>'
+        '</div>',
+        unsafe_allow_html=True,
+    )
     brand, nav, selectors = st.columns([2.2, 4.6, 2.4], vertical_alignment="center")
     with brand:
         st.markdown(
             '<div class="ap-commandbar__brand"><i>💧</i><div>AquaPredict '
-            '<span>water intelligence</span></div></div>',
+            '<span>purifier care</span></div></div>',
             unsafe_allow_html=True,
         )
     with nav:
@@ -1513,7 +1589,8 @@ def page_dashboard():
         f'<h1>Dashboard <span style="opacity:.62;font-weight:500;">/ {D["household"]["name"]}</span></h1>'
         f'<p>{D["data_source_label"]} · Household <strong>{hid}</strong> · '
         f'Demo day {D["household"]["now_day"]}</p>'
-        f'<div style="margin-top:1.1rem;"><span class="ap-ai-badge">MODEL READOUT · {labels[model]}</span></div>'
+        f'<div class="ap-hero__actions"><span class="ap-hero__tag">PURIFIER STATUS · ONLINE</span>'
+        f'<span class="ap-hero__tag">SERVICE PLANNING · {labels[model]}</span></div>'
         f'</section>',
         unsafe_allow_html=True,
     )
