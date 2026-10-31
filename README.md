@@ -39,10 +39,10 @@ Windows PowerShell:
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
+pip install -r requirements-full.txt
 pip install shap        # optional: SHAP drivers
 ```
-Mac/Linux: `python3 -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt`
+Mac/Linux: `python3 -m venv .venv && source .venv/bin/activate && pip install -r requirements-full.txt`
 
 ## Run the application (Person 3)
 ```bash
