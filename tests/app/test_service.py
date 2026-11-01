@@ -94,6 +94,26 @@ def test_truth_is_demo_only(svc):
     assert svc.truth(up, "sediment")["available"] is False
 
 
+def test_truth_handles_missing_simulator_label_without_crashing(svc, monkeypatch):
+    hid = make(svc)
+    original = svc.readings
+
+    def readings_with_missing_truth(household_id, upto_day=None, include_truth=False, last=None):
+        frame = original(household_id, upto_day, include_truth, last)
+        if include_truth:
+            frame = frame.copy()
+            frame.loc[frame.index[-1], "true_dtc_sediment"] = None
+        return frame
+
+    monkeypatch.setattr(svc, "readings", readings_with_missing_truth)
+    result = svc.truth(hid, "sediment")
+    assert result == {
+        "available": True,
+        "censored": True,
+        "note": "this filter was replaced before reaching its criterion",
+    }
+
+
 def test_untrained_model_is_a_clean_conflict(svc):
     hid = make(svc)
     with pytest.raises(Conflict):

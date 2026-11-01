@@ -373,10 +373,15 @@ class AquaService:
             return {"available": False, "note": "ground truth does not exist for real telemetry"}
         df = self.readings(hid, day, include_truth=True)
         v = df[dtc_col(stage)].iloc[-1]
-        if not np.isfinite(v):
+        try:
+            remaining_days = float(v)
+        except (TypeError, ValueError):
+            remaining_days = math.nan
+        if not math.isfinite(remaining_days):
             return {"available": True, "censored": True, "note": "this filter was replaced before reaching its criterion"}
-        return {"available": True, "censored": False, "remaining_days_true": float(v), "criterion_reached": bool(v <= 0),
-                "overdue_days": float(max(0.0, -v))}
+        return {"available": True, "censored": False, "remaining_days_true": remaining_days,
+                "criterion_reached": bool(remaining_days <= 0),
+                "overdue_days": float(max(0.0, -remaining_days))}
 
     def prediction_history(self, hid, stage=None, model=None) -> pd.DataFrame:
         sql, args = "SELECT * FROM predictions WHERE household_id=?", [hid]
