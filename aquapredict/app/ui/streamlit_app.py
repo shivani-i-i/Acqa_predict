@@ -2056,6 +2056,14 @@ def ui_header(title):
     )
 
 
+def ui_subheader(title):
+    st.markdown(
+        f'<h2 class="ap-subheader" style="color:#17324d !important;'
+        f'-webkit-text-fill-color:#17324d !important;opacity:1 !important;">{title}</h2>',
+        unsafe_allow_html=True,
+    )
+
+
 def page_dashboard():
     D = svc.dashboard(hid, model)
     st.markdown(
@@ -2156,14 +2164,14 @@ def page_dashboard():
     st.markdown('<div class="ap-section-label">Action queue</div>', unsafe_allow_html=True)
     left, right = st.columns([1.15, .85])
     with left:
-        st.subheader("Recent open alerts")
+        ui_subheader("Recent open alerts")
         for al in D["recent_alerts"] or []:
             st.markdown(f"- **{al['severity'].upper()}** · {al['title']}")
         if not D["recent_alerts"]:
             st.caption("No open alerts.")
         st.button("Open alert centre", key="goto_alerts", on_click=goto, args=("Alerts",))
     with right:
-        st.subheader("Upcoming maintenance")
+        ui_subheader("Upcoming maintenance")
         for p in D["upcoming_maintenance"]:
             w = f"days {p['window_lo']}-{p['window_hi']}" if p["window_lo"] is not None else ""
             st.markdown(f"- {STAGE_LABELS[p['stage']]}: **{p['status']}** ({w})")
@@ -2356,7 +2364,7 @@ def page_simulator():
     H = svc.household(hid)
     if H["source"] != "synthetic":
         st.info("Simulator controls apply to synthetic households only."); return
-    st.subheader(f"Controls for {hid}")
+    ui_subheader(f"Controls for {hid}")
     st.markdown("**Record that you replaced a filter today** (re-runs the simulator: earlier readings are unchanged, the new filter follows)")
     cols = st.columns(3)
     for s, col in zip(STAGES, cols):
@@ -2369,7 +2377,7 @@ def page_simulator():
     if H["user_faults"]:
         st.caption("Faults injected so far: " + "; ".join(f"{f['kind']} on {f.get('sensor')} from day {f['start']}" for f in H["user_faults"]))
     st.markdown("---")
-    st.subheader("What-if (HYPOTHETICAL scenario)")
+    ui_subheader("What-if (HYPOTHETICAL scenario)")
     st.caption("Re-simulates this household with changed parameters and compares forecasts at the same day. Nothing is saved, and it describes "
                "a changed synthetic world, not your actual purifier.")
     c = st.columns(2)
@@ -2392,7 +2400,7 @@ def page_simulator():
                  "interval": W["hypothetical"]["interval_days"], "simulator truth (days)": W["simulator_truth_hypothetical"]}]
         st.dataframe(pd.DataFrame(rows).astype(str), use_container_width=True)
     st.markdown("---")
-    st.subheader("Latest readings")
+    ui_subheader("Latest readings")
     st.dataframe(svc.readings(hid, last=20), use_container_width=True)
 
 
@@ -2473,7 +2481,7 @@ def page_planner():
                     svc.complete_plan, "Replacement recorded.", i))
                 c[3].button("Cancel entry", key=f"cx_{p['id']}", on_click=lambda i=p["id"]: act(svc.cancel_plan, "Entry cancelled.", i))
     st.markdown("---")
-    st.subheader("Cost estimate")
+    ui_subheader("Cost estimate")
     st.warning("Prices are ILLUSTRATIVE placeholders you can edit (only the RO price comes from the abstract's reference and needs re-verifying). "
                "These are not manufacturer prices and not measured savings.")
     d = CostConfig()
@@ -2573,7 +2581,7 @@ def page_models():
                 st.markdown(f"**Limitations:** {m['card']['limits']}")
             st.write(m["trained_with"] or m["reason"] or "baseline (no training)")
     st.markdown("---")
-    st.subheader("Train models")
+    ui_subheader("Train models")
     st.warning("Takes a few minutes (about 2-4 for 120 households). The page waits until training finishes.")
     c = st.columns(4)
     c[0].multiselect("Models", ["reference_v3", "person2"], ["reference_v3", "person2"], key="t_which")
@@ -2587,7 +2595,7 @@ def page_models():
 
 def page_data():
     ui_header("Data and export")
-    st.subheader("Live public water-quality context")
+    ui_subheader("Live public water-quality context")
     st.caption("This panel uses the USGS National Water Information System. It is environmental station data, not purifier telemetry, and it is never used as filter-life ground truth.")
     usgs_site = st.text_input("USGS station id", "01646500", key="usgs_site")
     if st.button("Fetch latest USGS observations", key="usgs_fetch"):
@@ -2604,7 +2612,7 @@ def page_data():
     st.markdown("---")
     c = st.columns(2)
     with c[0]:
-        st.subheader("Downloads")
+        ui_subheader("Downloads")
         truth = st.checkbox("Include simulator ground-truth columns (demo only)", False, key="ex_truth")
         for kind, fn in (("telemetry", f"{hid}_telemetry.csv"), ("predictions", "predictions.csv"), ("alerts", "alerts.csv"),
                          ("maintenance", "maintenance.csv"), ("experiments", "experiments.csv")):
@@ -2614,7 +2622,7 @@ def page_data():
                            f"{hid}_config.json", "application/json", key="dl_cfg")
         st.caption("Exports carry the data_source column; synthetic data are never presented as real telemetry.")
     with c[1]:
-        st.subheader("Upload real telemetry (integration boundary)")
+        ui_subheader("Upload real telemetry (integration boundary)")
         st.caption("CSV with one row per day: `day` (0,1,2,...), `usage_L`, and any of "
                    "`dp_sediment_bar, flow_Lpm, out_tds_ppm, feed_tds_ppm, temp_C, inlet_bar` (blank = missing). Filter ages are derived from the "
                    "replacement days you list. At least 15 days. Nothing is repaired silently; invalid files are rejected with reasons.")
