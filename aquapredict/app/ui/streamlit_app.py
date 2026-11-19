@@ -1821,6 +1821,29 @@ body section[data-testid="stMain"] .ap-forecast-title {
   opacity: 1 !important;
   -webkit-text-fill-color: #17324d !important;
 }
+
+/* Final workspace contrast pass for Streamlit-generated descendants. */
+body section[data-testid="stMain"] [data-testid="stMarkdownContainer"] h1,
+body section[data-testid="stMain"] [data-testid="stMarkdownContainer"] h2,
+body section[data-testid="stMain"] [data-testid="stMarkdownContainer"] h3,
+body section[data-testid="stMain"] [data-testid="stMarkdownContainer"] h4,
+body section[data-testid="stMain"] [data-testid="stMarkdownContainer"] h5,
+body section[data-testid="stMain"] [data-testid="stMarkdownContainer"] h6,
+body section[data-testid="stMain"] [data-testid="stMarkdownContainer"] p,
+body section[data-testid="stMain"] [data-testid="stMarkdownContainer"] strong,
+body section[data-testid="stMain"] [data-testid="stWidgetLabel"] *,
+body section[data-testid="stMain"] [data-testid="stCaptionContainer"] * {
+  color: #17324d !important;
+  opacity: 1 !important;
+  -webkit-text-fill-color: #17324d !important;
+}
+
+body section[data-testid="stMain"] .ap-hero *,
+body section[data-testid="stMain"] .ap-utilitybar *,
+body section[data-testid="stMain"] .ap-spatial * {
+  color: #f5fbff !important;
+  -webkit-text-fill-color: #f5fbff !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
