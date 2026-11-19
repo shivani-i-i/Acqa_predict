@@ -1844,6 +1844,23 @@ body section[data-testid="stMain"] .ap-spatial * {
   color: #f5fbff !important;
   -webkit-text-fill-color: #f5fbff !important;
 }
+
+body section[data-testid="stMain"] [role="tab"],
+body section[data-testid="stMain"] [role="tab"] *,
+body section[data-testid="stMain"] [data-baseweb="tab"],
+body section[data-testid="stMain"] [data-baseweb="tab"] * {
+  color: #294d6a !important;
+  opacity: 1 !important;
+  -webkit-text-fill-color: #294d6a !important;
+}
+
+body section[data-testid="stMain"] [role="tab"][aria-selected="true"],
+body section[data-testid="stMain"] [role="tab"][aria-selected="true"] *,
+body section[data-testid="stMain"] [data-baseweb="tab"][aria-selected="true"],
+body section[data-testid="stMain"] [data-baseweb="tab"][aria-selected="true"] * {
+  color: #075f98 !important;
+  -webkit-text-fill-color: #075f98 !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
