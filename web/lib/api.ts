@@ -38,6 +38,24 @@ export interface Dashboard {
   disclaimer: string;
 }
 
+interface DashboardResponse {
+  household: Household;
+  stages: Record<Stage, {
+    label: string;
+    condition: DashboardStage["condition"];
+    sensor_health: string;
+    reliability: string;
+    status: ForecastStatus;
+    point_days: number | null;
+    interval_days: number[] | null;
+    reason: string | null;
+    recommendation: string;
+  }>;
+  open_alerts: number;
+  upcoming_maintenance: Dashboard["upcoming_maintenance"];
+  disclaimer: string;
+}
+
 export interface Alert {
   id: number;
   stage: Stage;
@@ -46,6 +64,10 @@ export interface Alert {
   status: string;
   day: number;
   details?: Record<string, unknown>;
+}
+
+interface AlertResponse extends Omit<Alert, "day"> {
+  last_day?: number;
 }
 
 export async function request<T>(path: string, init?: RequestInit): Promise<T> {
@@ -68,7 +90,29 @@ export async function request<T>(path: string, init?: RequestInit): Promise<T> {
 export const api = {
   households: {
     list: () => request<Household[]>("/households"),
-    dashboard: (id: string) => request<Dashboard>(`/households/${id}/dashboard`),
+    dashboard: async (id: string): Promise<Dashboard> => {
+      const response = await request<DashboardResponse>(`/households/${id}/dashboard`);
+      return {
+        ...response,
+        stages: Object.fromEntries(Object.entries(response.stages).map(([stage, item]) => [
+          stage,
+          {
+            label: item.label,
+            condition: item.condition,
+            sensor_health: item.sensor_health,
+            forecast: {
+              stage_label: item.label,
+              status: item.status,
+              point_days: item.point_days,
+              interval_days: item.interval_days,
+              reliability: item.reliability,
+              reason: item.reason,
+              recommendation: item.recommendation,
+            },
+          },
+        ])) as Record<Stage, DashboardStage>,
+      };
+    },
     forecast: (id: string, stage: Stage) => request<Forecast>(`/households/${id}/forecast?stage=${stage}&explain=true`),
     createDemo: () => request<Household>("/households", {
       method: "POST",
@@ -76,7 +120,10 @@ export const api = {
     }),
   },
   alerts: {
-    list: (id: string) => request<Alert[]>(`/alerts?household_id=${id}`),
+    list: async (id: string): Promise<Alert[]> => (await request<AlertResponse[]>(`/alerts?household_id=${id}`)).map((alert) => ({
+      ...alert,
+      day: alert.last_day ?? 0,
+    })),
     action: (id: number, action: "acknowledge" | "resolve" | "dismiss") =>
       request<Alert>(`/alerts/${id}/${action}`, { method: "POST", body: JSON.stringify({ note: null }) }),
   },
