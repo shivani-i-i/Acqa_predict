@@ -1792,7 +1792,8 @@ body section[data-testid="stMain"] [data-testid="stTabs"] button[aria-selected="
   -webkit-text-fill-color: #075f98 !important;
 }
 
-body section[data-testid="stMain"] .ap-page-title {
+body section[data-testid="stMain"] body section[data-testid="stMain"] .ap-page-title,
+.ap-page-title {
   margin: .25rem 0 1.1rem;
   color: #17324d !important;
   font-family: 'Space Grotesk', sans-serif;
@@ -2006,7 +2007,11 @@ if hid:
 
 # ------------------------------------------------------------------ pages
 def ui_header(title):
-    st.markdown(f'<h1 class="ap-page-title">{title}</h1>', unsafe_allow_html=True)
+    st.markdown(
+        f'<h1 class="ap-page-title" style="color:#17324d !important;'
+        f'-webkit-text-fill-color:#17324d !important;opacity:1 !important;">{title}</h1>',
+        unsafe_allow_html=True,
+    )
 
 
 def page_dashboard():
