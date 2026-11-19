@@ -2087,6 +2087,12 @@ else:
     {"Dashboard": page_dashboard, "Filter detail": page_filter_detail, "Simulator & what-if": page_simulator, "Alerts": page_alerts,
      "Planner & costs": page_planner, "Validation lab": page_validation, "Models": page_models, "Data & export": page_data}[page]()
 
+if hid and page not in ("Dashboard", "Filter detail"):
+    st.markdown('<div class="ap-section-label">Interactive purifier view</div>', unsafe_allow_html=True)
+    st.markdown(spatial_twin(svc.dashboard(hid, model), svc.readings(hid, last=1).iloc[0], focus="sediment"),
+                unsafe_allow_html=True)
+    st.caption("Procedural 3D system view. Select Dashboard or Filter detail for stage-focused context.")
+
 if "_flash" in st.session_state:
     kind, msg = st.session_state.pop("_flash")
     if kind == "error":
