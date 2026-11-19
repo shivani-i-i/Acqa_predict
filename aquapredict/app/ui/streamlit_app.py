@@ -2237,6 +2237,34 @@ def page_validation():
     st.header("Validation lab")
     st.caption("Scores forecasters on FRESH synthetic households with the project's strict evaluation: only past readings are used, criteria are "
                "paired and use preset thresholds. Results are synthetic: they show algorithmic feasibility, not real-world accuracy.")
+    with st.expander("Hackathon demo: live fail-safe evidence", expanded=True):
+        st.markdown("**Camera-ready sequence:** inject a sensor fault, advance the synthetic clock, and show that the affected forecast is "
+                    "withheld or marked degraded instead of presenting an unqualified number.")
+        st.caption("This changes only the selected synthetic demo household. It is not a physical safety test and does not assess water safety.")
+        if st.button("Run fail-safe demonstration", key="failsafe_run"):
+            try:
+                now = int(svc.household(hid)["now_day"])
+                svc.inject_fault(hid, {"kind": "stuck", "sensor": "dp_sediment_bar", "start": now + 1,
+                                       "duration": 14, "magnitude": 0.0})
+                svc.advance(hid, 14, 7, model)
+                svc.update_monitoring(hid, model)
+                st.session_state["_failsafe"] = svc.forecast(hid, "sediment", model, explain=True)
+                st.success("Fault injected and synthetic clock advanced. The result below is the live service response.")
+            except Exception as exc:
+                st.error(f"Fail-safe demonstration failed: {exc}")
+        F = st.session_state.get("_failsafe")
+        if F:
+            c = st.columns(4)
+            c[0].metric("Forecast status", F["status"].replace("_", " "))
+            c[1].metric("Sensor health", F["sensor_health"].replace("_", " "))
+            c[2].metric("Point estimate", "--" if F["point_days"] is None else f"{F['point_days']:.0f} d")
+            c[3].metric("Sensor events", len(F["sensor_events"]))
+            if F["status"] == "withheld" or F["sensor_health"] == "fault_suspected":
+                st.warning(f"Fail-safe response: {F['reason'] or F['reliability']}. No unqualified maintenance number should be used.")
+            else:
+                st.error("The injected fault did not trigger a blocked or degraded response; investigate before presenting this demo.")
+            st.json({"status": F["status"], "sensor_health": F["sensor_health"], "reason": F["reason"],
+                     "sensor_events": F["sensor_events"]}, expanded=False)
     avail = [m["name"] for m in svc.models() if m["available"]]
     c = st.columns(4)
     c[0].number_input("Households", 4, 60, 10, key="v_n")

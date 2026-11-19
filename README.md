@@ -156,6 +156,27 @@ Carbon is intentionally handled differently: the simulator has no direct carbon
 wear sensor. The UI routes carbon to a volume rule, hides a misleading
 confidence interval, and explains that policy to the user.
 
+### 9. Hackathon evidence mode
+
+The **Validation lab → Hackathon demo: live fail-safe evidence** panel is a
+repeatable camera-ready demonstration of the core safety behavior:
+
+1. click **Run fail-safe demonstration**;
+2. the service injects a stuck differential-pressure sensor fault into the
+   selected synthetic household;
+3. the synthetic clock advances through the fault window;
+4. monitoring and the sediment forecast run through the same service/API path;
+5. the screen shows the measured status, sensor health, point estimate, event
+   count, reason, and raw sensor-event evidence.
+
+The expected safe behavior is `withheld` or `degraded` with a
+`fault_suspected` sensor state. If the result is an unqualified forecast, the
+panel displays an explicit failure message rather than hiding it. This is a
+software fail-safe demonstration on synthetic telemetry, not a physical
+water-safety test. For a presentation, record the panel, then run the
+Validation lab on a fresh seed and show the measured metrics table and its
+synthetic-data caveat.
+
 ## Architecture
 
 ```text
