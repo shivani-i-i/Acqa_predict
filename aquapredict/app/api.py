@@ -8,6 +8,7 @@ from typing import Optional
 
 from fastapi import FastAPI, HTTPException, Query, Request, Response
 from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 
 from . import schemas as S
 from .registry import ModelUnavailable
@@ -23,6 +24,13 @@ def create_app(service: Optional[AquaService] = None) -> FastAPI:
                   description="Filter-maintenance forecasting prototype. Household purifier data are source-labeled: uploaded "
                               "telemetry is real user data, synthetic households are simulator data, and USGS observations are "
                               "environmental context. Forecasts predict filter wear only; they do not assess water safety.")
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=[os.environ.get("AQUAPREDICT_FRONTEND_ORIGIN", "http://localhost:3000")],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
     def S_() -> AquaService:
         nonlocal svc

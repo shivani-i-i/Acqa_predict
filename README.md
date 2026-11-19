@@ -215,6 +215,31 @@ uvicorn aquapredict.app.api:app --port 8000
 
 The API's interactive documentation is available at `/docs`.
 
+### Optional 3D web frontend
+
+The repository also includes a standalone Next.js frontend in [`web/`](web/).
+It provides a responsive procedural 3D purifier view and a browser dashboard
+for households, filter forecasts, alerts, planning, validation, models, and
+data boundaries. It uses the same FastAPI service; it does not duplicate model
+logic in JavaScript.
+
+Start the API first, then run:
+
+```bash
+cd web
+copy .env.example .env.local          # Windows
+# cp .env.example .env.local          # macOS/Linux
+npm install
+npm run dev
+```
+
+Open `http://localhost:3000`. Set
+`NEXT_PUBLIC_API_URL` to the deployed API URL when the backend is not local.
+For browser requests, configure the backend's
+`AQUAPREDICT_FRONTEND_ORIGIN` to the frontend origin. The 3D view is procedural
+and has no external model or asset license dependency; reduced-motion users
+receive the same information without relying on animation.
+
 The Vercel entrypoint is intentionally limited to the public health and USGS
 context routes. The full FastAPI service and Streamlit dashboard should be
 deployed separately, with persistent storage and authentication configured
