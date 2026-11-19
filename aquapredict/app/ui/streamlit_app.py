@@ -1571,6 +1571,45 @@ body section[data-testid="stMain"] [data-testid="stMarkdownContainer"] strong,
 body section[data-testid="stMain"] [data-testid="stMarkdownContainer"] b {
   color: #ffffff !important;
 }
+
+/* Keep the command centre readable against the dark product shell. */
+body section[data-testid="stMain"] .ap-commandbar__brand,
+body section[data-testid="stMain"] .ap-commandbar__brand div {
+  color: #f4fbff !important;
+}
+
+body section[data-testid="stMain"] .ap-commandbar__brand span {
+  color: #8feee7 !important;
+}
+
+body section[data-testid="stMain"] .ap-utilitybar {
+  color: #d7efff !important;
+  background: #103f70 !important;
+}
+
+body section[data-testid="stMain"] .ap-topnav [data-testid="stRadioOption"],
+body section[data-testid="stMain"] .ap-topnav [data-testid="stRadioOption"] p,
+body section[data-testid="stMain"] .ap-topnav [data-testid="stRadioOption"] span,
+body section[data-testid="stMain"] .ap-topnav label {
+  color: #c9e2f4 !important;
+  background: transparent !important;
+  opacity: 1 !important;
+}
+
+body section[data-testid="stMain"] .ap-topnav [data-testid="stRadioOption"][data-selected="true"],
+body section[data-testid="stMain"] .ap-topnav [data-testid="stRadioOption"][data-selected="true"] p,
+body section[data-testid="stMain"] .ap-topnav [data-testid="stRadioOption"][data-selected="true"] span,
+body section[data-testid="stMain"] .ap-topnav label:has(input:checked) {
+  color: #ffffff !important;
+  background: rgba(67, 217, 210, .16) !important;
+  border-bottom-color: #43d9d2 !important;
+}
+
+body section[data-testid="stMain"] .ap-topnav [data-testid="stRadioOption"]:hover,
+body section[data-testid="stMain"] .ap-topnav label:hover {
+  color: #ffffff !important;
+  background: rgba(67, 217, 210, .09) !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
