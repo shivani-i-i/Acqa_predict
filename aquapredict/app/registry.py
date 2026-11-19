@@ -141,14 +141,21 @@ class ReferenceWrapper(Forecaster):
 class Person2Wrapper(Forecaster):
     name = "person2"
 
-    def __init__(self, bundle_path, version, explain=True):
+    def __init__(self, bundle_path, version, explain=True, selected_models=None):
         from ..integration.train import Person2Forecaster
-        self.p2, self.version = Person2Forecaster(bundle_path, pressure_source="dp", explain=explain), version
+        self.p2, self.version = Person2Forecaster(
+            bundle_path, pressure_source="dp", explain=explain, selected_models=selected_models
+        ), version
 
     def run(self, hist, stage):
         if _too_short(hist, stage):
             return normalise(self.name, self.version, stage, status="withheld",
                              reason=f"insufficient history since installation (< {MIN_HISTORY_DAYS} days)")
+        selected = self.p2.selected_models.get(STAGE_TO_P2[stage], "gradient_boosting")
+        if selected == "health_threshold_proxy":
+            selected = "health_20pct"
+        if selected in BASELINES:
+            return BaselineForecaster(selected).run(hist, stage)
         r = self.p2.respond(hist, stage)
         iv = r["interval_days"]
         status = {"ok": "interval" if iv else "point_only", "degraded": "point_only", "withheld": "withheld"}[r["status"]]
@@ -226,7 +233,8 @@ class ModelRegistry:
                 except Exception as e:                  # e.g. scikit-learn version mismatch
                     raise ModelUnavailable(f"could not load '{name}' ({type(e).__name__}); retrain it") from e
             else:
-                f = Person2Wrapper(self._person2_paths(), ver, explain=explain)
+                selected = (self.meta().get(name) or {}).get("selected_models", {})
+                f = Person2Wrapper(self._person2_paths(), ver, explain=explain, selected_models=selected)
         else:
             raise KeyError(f"unknown model '{name}'")
         self._cache[key] = f
@@ -237,8 +245,8 @@ class ModelRegistry:
         """Train on a fresh synthetic dataset (calibrated simulator). Train/calibration households are disjoint.
         Records `train_seed` so the Validation Lab can refuse to evaluate on the same households."""
         df, _ = generate_dataset(n, law="A", seed=seed, cfg=SimConfig.calibrated())
-        sp = split_households(df.household_id.unique(), seed=seed, fractions=(0.6, 0.4, 0.0))
-        tr, ca = subset(df, sp["train"]), subset(df, sp["calibration"])
+        sp = split_households(df.household_id.unique(), seed=seed, fractions=(0.5, 0.25, 0.25))
+        tr, ca, dev = (subset(df, sp[k]) for k in ("train", "calibration", "test"))
         meta = self.meta()
         stamp = dt.datetime.now(dt.timezone.utc).replace(microsecond=0).isoformat()
         base = {"train_seed": seed, "n_households": n, "trained_at": stamp, "max_iter": max_iter,
@@ -255,8 +263,13 @@ class ModelRegistry:
         if "person2" in which:
             from ..integration.train import train_person2_on_person1
             log("training Person 2's model ...")
-            train_person2_on_person1(tr, ca, self._paths()["person2"], seed=seed, max_iter=max_iter, pressure_source="dp")
+            trained = train_person2_on_person1(
+                tr, ca, self._paths()["person2"], seed=seed, max_iter=max_iter, pressure_source="dp",
+                development_df=dev, select_model=True,
+            )
             meta["person2"] = dict(base)
+            meta["person2"]["selected_models"] = trained.selected_models
+            meta["person2"]["selection_metrics"] = trained.selection_metrics
         with open(self._meta_path, "w") as fh:
             json.dump(meta, fh, indent=2)
         self._cache.clear()

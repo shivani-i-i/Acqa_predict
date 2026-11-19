@@ -615,8 +615,13 @@ limitations. It also exposes training controls:
 
 Training can take minutes. Artifacts are written with SHA-256 sidecars. The
 registry refuses artifacts that are missing or fail integrity verification.
-The best-evidence default remains the reference comparison model when it is
-available; the integrated model is not silently treated as superior.
+The integrated model is trained per stage and now compares its GBM against
+transparent baselines on a disjoint development household split. The selected
+stage route and development metrics are persisted in the model metadata and
+reused at runtime; a baseline selection is not replaced by a GBM merely
+because the GBM is more complex. The best-evidence default remains the
+reference comparison model when it is available; the integrated model is not
+silently treated as superior.
 
 ### Data & export
 

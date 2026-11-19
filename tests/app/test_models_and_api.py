@@ -21,6 +21,15 @@ def test_registry_reports_trained_models_and_defaults_to_best_evidence(trained_d
     assert s.registry.default_model() == "reference_v3"
 
 
+def test_registry_persists_development_stage_selection(tmp_path):
+    s = AquaService(str(tmp_path / "a.db"), str(tmp_path / "artifacts"))
+    meta = s.registry.train(which=("person2",), n=24, seed=88, max_iter=20, log=lambda *_: None)
+    selected = meta["person2"]["selected_models"]
+    assert set(selected) == {"sediment", "carbon", "ro_membrane"}
+    assert set(selected.values()) <= {"gradient_boosting", "trend", "volume_rule", "health_20pct", "health_threshold_proxy"}
+    assert s.registry.meta()["person2"]["selection_metrics"]
+
+
 def test_reference_model_gives_ordered_interval_and_status(trained_dir, tmp_path):
     s = AquaService(str(tmp_path / "a.db"), trained_dir)
     hid = s.create_household("m", "normal", seed=5, now_day=150)["id"]
