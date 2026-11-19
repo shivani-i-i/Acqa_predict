@@ -1742,6 +1742,55 @@ body section[data-testid="stMain"] .ap-note {
   background: #eef7fb !important;
   color: #31536c !important;
 }
+
+/* Descendant-level overrides win against Streamlit's generated metric/markdown
+   rules, which otherwise keep the old light-on-dark text colors. */
+body section[data-testid="stMain"] h1,
+body section[data-testid="stMain"] h1 *,
+body section[data-testid="stMain"] h2,
+body section[data-testid="stMain"] h2 *,
+body section[data-testid="stMain"] h3,
+body section[data-testid="stMain"] h3 *,
+body section[data-testid="stMain"] h4,
+body section[data-testid="stMain"] h4 *,
+body section[data-testid="stMain"] [data-testid="stMarkdownContainer"] h1 *,
+body section[data-testid="stMain"] [data-testid="stMarkdownContainer"] h2 *,
+body section[data-testid="stMain"] [data-testid="stMarkdownContainer"] h3 *,
+body section[data-testid="stMain"] [data-testid="stMarkdownContainer"] h4 * {
+  color: #17324d !important;
+  opacity: 1 !important;
+  -webkit-text-fill-color: #17324d !important;
+}
+
+body section[data-testid="stMain"] [data-testid="stMetricLabel"],
+body section[data-testid="stMain"] [data-testid="stMetricLabel"] *,
+body section[data-testid="stMain"] [data-testid="stMetricValue"],
+body section[data-testid="stMain"] [data-testid="stMetricValue"] * {
+  color: #17324d !important;
+  opacity: 1 !important;
+  -webkit-text-fill-color: #17324d !important;
+}
+
+body section[data-testid="stMain"] [data-testid="stMetricLabel"],
+body section[data-testid="stMain"] [data-testid="stMetricLabel"] * {
+  color: #52718b !important;
+  -webkit-text-fill-color: #52718b !important;
+}
+
+body section[data-testid="stMain"] [data-testid="stRadioOption"],
+body section[data-testid="stMain"] [data-testid="stRadioOption"] *,
+body section[data-testid="stMain"] [data-testid="stTab"] button,
+body section[data-testid="stMain"] [data-testid="stTabs"] button {
+  color: #294d6a !important;
+  opacity: 1 !important;
+  -webkit-text-fill-color: #294d6a !important;
+}
+
+body section[data-testid="stMain"] [data-testid="stTab"] button[aria-selected="true"],
+body section[data-testid="stMain"] [data-testid="stTabs"] button[aria-selected="true"] {
+  color: #075f98 !important;
+  -webkit-text-fill-color: #075f98 !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
