@@ -92,6 +92,15 @@ def test_every_page_renders_without_errors(env, page):
     assert at.header or at.subheader or at.markdown
 
 
+def test_alerts_page_shows_monitoring_data_when_no_alert_matches(env):
+    svc, _ = env
+    demo(svc, advance=0)
+    at = goto(run(), "Alerts")
+    no_errors(at)
+    assert "Current synthetic monitoring data is shown below." in text(at)
+    assert len(at.dataframe) >= 1
+
+
 def test_dashboard_shows_three_separate_signals_and_labels(env):
     svc, _ = env
     demo(svc)

@@ -2404,9 +2404,37 @@ def page_alerts():
     status = c[0].multiselect("Status", ["open", "acknowledged", "resolved", "dismissed"], ["open", "acknowledged"], key="al_status")
     stage = c[1].selectbox("Stage", ["all"] + list(STAGES), key="al_stage")
     c[2].button("Refresh monitoring now", key="al_refresh", on_click=lambda: act(svc.update_monitoring, "Monitoring refreshed.", hid, model))
-    rows = [a for a in svc.alerts(hid) if a["status"] in status and (stage == "all" or a["stage"] == stage)]
+    all_alerts = svc.alerts(hid)
+    rows = [a for a in all_alerts if a["status"] in status and (stage == "all" or a["stage"] == stage)]
     if not rows:
-        st.success("No alerts match these filters.")
+        st.info("No alert episodes match these filters. Current synthetic monitoring data is shown below.")
+        monitor_rows = []
+        stages = [stage] if stage != "all" else list(STAGES)
+        for current_stage in stages:
+            try:
+                forecast = svc.forecast(hid, current_stage, model, explain=False)
+                stage_alerts = [a for a in all_alerts if a["stage"] == current_stage]
+                active = [a for a in stage_alerts if a["status"] in ("open", "acknowledged")]
+                monitor_rows.append({
+                    "stage": STAGE_LABELS[current_stage],
+                    "monitoring day": svc.household(hid)["now_day"],
+                    "forecast status": forecast["status"].replace("_", " "),
+                    "sensor health": forecast["sensor_health"],
+                    "point estimate (days)": forecast["point_days"],
+                    "current alert": active[0]["severity"] if active else "clear",
+                    "next action": forecast["recommendation"],
+                })
+            except ERRORS as exc:
+                monitor_rows.append({
+                    "stage": STAGE_LABELS[current_stage],
+                    "monitoring day": svc.household(hid)["now_day"],
+                    "forecast status": "unavailable",
+                    "sensor health": "unknown",
+                    "point estimate (days)": None,
+                    "current alert": "error",
+                    "next action": str(exc),
+                })
+        st.dataframe(pd.DataFrame(monitor_rows), use_container_width=True, hide_index=True)
     for a in rows:
         icon = {"high": "🔴", "medium": "🟠", "low": "🟡"}[a["severity"]]
         with st.expander(f"{icon} {a['title']}  ·  {a['status']}  ·  day {a['first_day']}-{a['last_day']}"):
