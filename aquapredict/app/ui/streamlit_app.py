@@ -2058,8 +2058,12 @@ def ui_header(title):
 
 def ui_subheader(title):
     st.markdown(
-        f'<h2 class="ap-subheader" style="color:#17324d !important;'
-        f'-webkit-text-fill-color:#17324d !important;opacity:1 !important;">{title}</h2>',
+        f'<div class="ap-subheader" role="heading" aria-level="2" '
+        f'style="display:block;color:#17324d !important;background:#eaf3f8 !important;'
+        f'-webkit-text-fill-color:#17324d !important;opacity:1 !important;'
+        f'border-left:4px solid #2e7ca8;border-radius:8px;padding:.65rem .85rem;'
+        f'margin:1rem 0 .75rem;font-size:1.35rem;font-weight:700;line-height:1.3;">'
+        f'{title}</div>',
         unsafe_allow_html=True,
     )
 
