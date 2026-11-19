@@ -1792,7 +1792,7 @@ body section[data-testid="stMain"] [data-testid="stTabs"] button[aria-selected="
   -webkit-text-fill-color: #075f98 !important;
 }
 
-body section[data-testid="stMain"] body section[data-testid="stMain"] .ap-page-title,
+body section[data-testid="stMain"] .ap-page-title,
 .ap-page-title {
   margin: .25rem 0 1.1rem;
   color: #17324d !important;
@@ -1800,6 +1800,25 @@ body section[data-testid="stMain"] body section[data-testid="stMain"] .ap-page-t
   font-size: clamp(1.8rem, 3vw, 2.45rem);
   font-weight: 700;
   letter-spacing: -.025em;
+  -webkit-text-fill-color: #17324d !important;
+}
+
+body section[data-testid="stMain"] [data-testid="stWidgetLabel"],
+body section[data-testid="stMain"] [data-testid="stWidgetLabel"] *,
+body section[data-testid="stMain"] [data-testid="stMarkdownContainer"] p,
+body section[data-testid="stMain"] [data-testid="stMarkdownContainer"] li {
+  color: #17324d !important;
+  opacity: 1 !important;
+  -webkit-text-fill-color: #17324d !important;
+}
+
+body section[data-testid="stMain"] .ap-forecast-title {
+  margin: .2rem 0 1.15rem;
+  color: #17324d !important;
+  font-size: clamp(1.45rem, 2.5vw, 2rem);
+  font-weight: 700;
+  line-height: 1.2;
+  opacity: 1 !important;
   -webkit-text-fill-color: #17324d !important;
 }
 </style>
@@ -2157,12 +2176,19 @@ def indicator_series(hist, stage):
 
 def page_filter_detail():
     ui_header("Filter detail")
-    stage = st.radio("Filter stage", list(STAGES), key="stage", horizontal=True, format_func=lambda s: STAGE_LABELS[s])
+    st.markdown(
+        '<div style="color:#17324d !important;-webkit-text-fill-color:#17324d !important;'
+        'font-size:.9rem;font-weight:600;margin-bottom:.35rem;">Filter stage</div>',
+        unsafe_allow_html=True,
+    )
+    stage = st.radio("Filter stage", list(STAGES), key="stage", horizontal=True,
+                     format_func=lambda s: STAGE_LABELS[s], label_visibility="collapsed")
     try:
         fc = svc.forecast(hid, stage, model, explain=True)
     except ERRORS as e:
         st.error(str(e)); return
-    st.markdown(f'<h2 style="color:#17324d !important;-webkit-text-fill-color:#17324d !important;">{fmt_window(fc)}</h2>',
+    st.markdown(f'<div class="ap-forecast-title" style="color:#17324d !important;'
+                f'-webkit-text-fill-color:#17324d !important;">{fmt_window(fc)}</div>',
                 unsafe_allow_html=True)
     st.markdown('<div class="ap-section-label">Interactive purifier view</div>', unsafe_allow_html=True)
     st.markdown(spatial_twin(svc.dashboard(hid, model), svc.readings(hid, last=1).iloc[0], stage), unsafe_allow_html=True)
