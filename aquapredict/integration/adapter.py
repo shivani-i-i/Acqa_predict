@@ -105,3 +105,12 @@ def training_frame(df: pd.DataFrame, stages=STAGES, pressure_source: str = "dp")
         raise ValueError("no completed filter lives to build a training frame from")
     out = pd.concat(parts, ignore_index=True)
     return out[["household_id", "filter_stage"] + P2_COLUMNS + ["remaining_days"]]
+
+
+def training_frames_by_stage(df: pd.DataFrame, stages=STAGES, pressure_source: str = "dp"):
+    """Build independent training frames, one for each Person 2 filter stage."""
+    frames = {}
+    for stage in stages:
+        frame = training_frame(df, stages=(stage,), pressure_source=pressure_source)
+        frames[STAGE_TO_P2[stage]] = frame
+    return frames

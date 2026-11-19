@@ -4,6 +4,7 @@ SECURITY: trained artifacts are pickles/joblib files. Only load artifacts create
 """
 from __future__ import annotations
 import datetime as dt
+import hashlib
 import json
 import os
 import pickle
@@ -15,6 +16,8 @@ from ..baselines.baselines import BASELINES
 from ..simulator.config import SimConfig
 from ..simulator.generate import generate_dataset
 from ..eval.splits import split_households, subset
+from ..schema import STAGES
+from ..integration.adapter import STAGE_TO_P2
 
 MIN_HISTORY_DAYS = 14
 DISCLAIMER = ("SYNTHETIC-data prototype: not validated on real purifier telemetry. Predicts filter wear only; it does "
@@ -51,6 +54,33 @@ MODEL_CARDS = {
 
 class ModelUnavailable(RuntimeError):
     pass
+
+
+def _artifact_digest_path(path):
+    return os.path.join(os.path.dirname(path), os.path.basename(path) + ".sha256")
+
+
+def _artifact_sha256(path):
+    digest = hashlib.sha256()
+    with open(path, "rb") as fh:
+        for chunk in iter(lambda: fh.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _write_artifact_digest(path):
+    with open(_artifact_digest_path(path), "w", encoding="ascii") as fh:
+        fh.write(_artifact_sha256(path) + "\n")
+
+
+def _verify_artifact_digest(path):
+    digest_path = _artifact_digest_path(path)
+    if not os.path.exists(digest_path):
+        raise ModelUnavailable(f"artifact integrity sidecar is missing for '{path}'")
+    with open(digest_path, encoding="ascii") as fh:
+        expected = fh.read().strip().lower()
+    if expected != _artifact_sha256(path):
+        raise ModelUnavailable(f"artifact integrity check failed for '{path}'")
 
 
 def normalise(model, version, stage, *, status, point=None, interval=None, reason=None, interval_status="", drivers=None,
@@ -144,16 +174,31 @@ class ModelRegistry:
         return json.load(open(self._meta_path)) if os.path.exists(self._meta_path) else {}
 
     def _paths(self):
-        return {"reference_v3": os.path.join(self.dir, "reference_v3.pkl"), "person2": os.path.join(self.dir, "person2_bundle.joblib")}
+        return {"reference_v3": os.path.join(self.dir, "reference_v3.pkl"),
+                "person2": os.path.join(self.dir, "person2_bundle.joblib")}
+
+    def _person2_paths(self):
+        return {STAGE_TO_P2[stage]: os.path.join(self.dir, f"person2_bundle.{stage}.joblib")
+                for stage in STAGES}
+
+    def _artifact_available(self, name):
+        if name == "person2":
+            paths = self._person2_paths().values()
+            return all(os.path.exists(path) and os.path.exists(_artifact_digest_path(path)) for path in paths)
+        path = self._paths()[name]
+        return os.path.exists(path) and os.path.exists(_artifact_digest_path(path))
 
     def available(self) -> list[dict]:
         out = [{"name": n, "label": BASELINE_LABELS[n], "available": True, "reason": "", "trained_with": None} for n in BASELINES]
         meta = self.meta()
         for n, p in self._paths().items():
-            ok = os.path.exists(p)
+            ok = self._artifact_available(n)
             out.append({"name": n, "label": LABELS[n], "available": ok, "trained_with": meta.get(n),
-                        "reason": "" if ok else "not trained yet - use 'Train models' (a few minutes) or `make models`"})
+                        "reason": "" if ok else "not trained yet or artifact integrity sidecar is missing - use 'Train models' (a few minutes) or `make models`"})
         return out
+
+    def is_available(self, name):
+        return name in self._paths() and self._artifact_available(name)
 
     def default_model(self) -> str:
         return "reference_v3" if os.path.exists(self._paths()["reference_v3"]) else "trend"
@@ -169,18 +214,19 @@ class ModelRegistry:
         if name in BASELINES:
             f = BaselineForecaster(name)
         elif name in self._paths():
-            path = self._paths()[name]
-            if not os.path.exists(path):
+            if not self._artifact_available(name):
                 raise ModelUnavailable(f"model '{name}' has not been trained yet")
             ver = f"{name}@{(self.meta().get(name) or {}).get('trained_at', 'unknown')}"
             if name == "reference_v3":
+                path = self._paths()[name]
                 try:
+                    _verify_artifact_digest(path)
                     with open(path, "rb") as fh:
                         f = ReferenceWrapper(pickle.load(fh), ver)
                 except Exception as e:                  # e.g. scikit-learn version mismatch
                     raise ModelUnavailable(f"could not load '{name}' ({type(e).__name__}); retrain it") from e
             else:
-                f = Person2Wrapper(path, ver, explain=explain)
+                f = Person2Wrapper(self._person2_paths(), ver, explain=explain)
         else:
             raise KeyError(f"unknown model '{name}'")
         self._cache[key] = f
@@ -204,6 +250,7 @@ class ModelRegistry:
             m._cache = {}
             with open(self._paths()["reference_v3"], "wb") as fh:
                 pickle.dump(m, fh)
+            _write_artifact_digest(self._paths()["reference_v3"])
             meta["reference_v3"] = dict(base)
         if "person2" in which:
             from ..integration.train import train_person2_on_person1

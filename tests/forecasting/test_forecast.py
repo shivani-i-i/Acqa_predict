@@ -106,6 +106,18 @@ def test_corrupt_or_foreign_artifact_rejected(tmp_path):
         load_bundle(tmp_path / "old.joblib")
 
 
+def test_artifact_digest_is_required_and_tampering_is_rejected(model, calibrator, tmp_path):
+    path = save_bundle(model, calibrator, tmp_path / "signed.joblib")
+    digest = path.with_name(path.name + ".sha256")
+    assert digest.exists()
+    path.write_bytes(path.read_bytes() + b"tampered")
+    with pytest.raises(ArtifactIncompatibleError, match="SHA-256"):
+        load_bundle(path)
+    digest.unlink()
+    with pytest.raises(ArtifactIncompatibleError, match="SHA-256"):
+        load_bundle(path)
+
+
 def test_training_survives_a_sensor_that_is_entirely_absent(splits):
     train = splits["train"].drop(columns=["flow_rate"])          # hardware without a flow sensor
     m = ForecastModel(ForecastConfig(seed=1, max_iter=20)).fit(train)

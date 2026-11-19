@@ -63,7 +63,8 @@ class TrainIn(BaseModel):
 
 class IngestIn(BaseModel):
     name: str = Field(default="", max_length=80)
-    rows: list[dict] = Field(min_length=15, description="daily rows: day, usage_L, and sensor readings (null allowed)")
+    rows: list[dict] = Field(min_length=15, max_length=5000,
+                             description="daily rows: day, usage_L, and sensor readings (null allowed)")
     replacements: dict[Stage, list[int]] = Field(default_factory=dict, description="days each stage's filter was replaced (>0)")
 
 
@@ -73,3 +74,6 @@ class ValidationIn(BaseModel):
     methods: list[str] = Field(default_factory=lambda: ["trend", "volume_rule", "health_20pct"])
     calibrated: bool = True
     cost: Optional[dict[str, float | dict]] = None
+
+
+AlertAction = Literal["acknowledge", "resolve", "dismiss"]

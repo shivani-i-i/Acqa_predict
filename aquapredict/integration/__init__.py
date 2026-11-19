@@ -1,7 +1,8 @@
 """Bridge between Person 1 (simulator + evaluation) and Person 2 (forecasting + sensor intelligence)."""
 from .adapter import (STAGE_TO_P2, P2_TO_STAGE, PRESSURE_SOURCES, to_p2_readings, history_to_p2,
                       training_frame)
+from .adapter import training_frames_by_stage
 from .train import Person2Forecaster, train_person2_on_person1
 
 __all__ = ["STAGE_TO_P2", "P2_TO_STAGE", "PRESSURE_SOURCES", "to_p2_readings", "history_to_p2",
-           "training_frame", "Person2Forecaster", "train_person2_on_person1"]
+           "training_frame", "training_frames_by_stage", "Person2Forecaster", "train_person2_on_person1"]

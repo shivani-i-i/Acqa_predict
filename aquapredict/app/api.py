@@ -2,6 +2,8 @@
 Local prototype: no authentication, one SQLite file. Do not expose to a network as-is."""
 from __future__ import annotations
 import os
+import time
+from collections import defaultdict, deque
 from typing import Optional
 
 from fastapi import FastAPI, HTTPException, Query, Request, Response
@@ -31,6 +33,25 @@ def create_app(service: Optional[AquaService] = None) -> FastAPI:
         return svc
 
     app.state.service = S_
+    app.state.rate_windows = defaultdict(deque)
+    rate_limit = int(os.environ.get("AQUAPREDICT_RATE_LIMIT", "120"))
+    rate_window_seconds = 60.0
+
+    @app.middleware("http")
+    async def protect_api(request: Request, call_next):
+        if request.url.path != "/health":
+            expected = os.environ.get("AQUAPREDICT_API_KEY")
+            if expected and request.headers.get("x-api-key") != expected:
+                return JSONResponse(status_code=401, content={"detail": "missing or invalid API key"})
+            now = time.monotonic()
+            client = request.client.host if request.client else "unknown"
+            window = app.state.rate_windows[client]
+            while window and now - window[0] >= rate_window_seconds:
+                window.popleft()
+            if len(window) >= rate_limit:
+                return JSONResponse(status_code=429, content={"detail": "rate limit exceeded"})
+            window.append(now)
+        return await call_next(request)
 
     @app.exception_handler(NotFound)
     async def _nf(_: Request, e: NotFound):
@@ -173,7 +194,7 @@ def create_app(service: Optional[AquaService] = None) -> FastAPI:
         return clean(S_().alerts(household_id, status, stage))
 
     @app.post("/alerts/{alert_id}/{action}")
-    def alert_action(alert_id: int, action: str, body: S.NoteIn):
+    def alert_action(alert_id: int, action: S.AlertAction, body: S.NoteIn):
         return clean(S_().alert_action(alert_id, action, body.note))
 
     # ------------------------------------------------------------------ real telemetry boundary, validation lab, export

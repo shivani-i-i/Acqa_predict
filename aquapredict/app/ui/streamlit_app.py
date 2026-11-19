@@ -1420,6 +1420,8 @@ def goto(page, stage=None):
 
 
 def fmt_window(fc):
+    if fc.get("stage") == "carbon" or fc.get("model") == "volume_rule" and fc.get("stage_label") == "Carbon filter":
+        return "Usage-based replacement estimate (no sensor interval)"
     if fc["status"] == "withheld":
         return "Forecast withheld"
     p, iv = fc["point_days"], fc["interval_days"]
@@ -1724,6 +1726,8 @@ def page_filter_detail():
     c[2].metric("Model", labels[fc["model"]])
     st.write(f"**Reliability:** {fc['reliability']}")
     st.caption(f"Interval basis: {fc['interval_status'] or 'n/a'}  ·  model version: {fc['model_version']}")
+    if stage == "carbon":
+        st.info("Carbon has no direct sensor signal in this synthetic simulator. AquaPredict uses a volume rule and hides a confidence interval.")
     if fc["reason"]:
         st.warning(f"Forecast withheld or limited: {fc['reason']}")
     st.info(f"**Recommended next action:** {fc['recommendation']}")

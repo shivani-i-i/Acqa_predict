@@ -6,6 +6,7 @@ Loading an untrusted file can execute arbitrary code.
 from __future__ import annotations
 
 from dataclasses import asdict
+import hashlib
 from pathlib import Path
 from typing import Tuple, Union
 
@@ -26,6 +27,32 @@ class ArtifactNotFoundError(FileNotFoundError):
 
 class ArtifactIncompatibleError(ValueError):
     pass
+
+
+def _digest_path(path: Path) -> Path:
+    return path.with_name(path.name + ".sha256")
+
+
+def _sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as fh:
+        for chunk in iter(lambda: fh.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _write_digest(path: Path) -> None:
+    _digest_path(path).write_text(_sha256(path) + "\n", encoding="ascii")
+
+
+def _verify_digest(path: Path) -> None:
+    sidecar = _digest_path(path)
+    if not sidecar.exists():
+        raise ArtifactIncompatibleError(f"SHA-256 sidecar is missing for artifact {path}. Retrain or restore it.")
+    expected = sidecar.read_text(encoding="ascii").strip().lower()
+    actual = _sha256(path)
+    if expected != actual:
+        raise ArtifactIncompatibleError(f"SHA-256 verification failed for artifact {path}.")
 
 
 def save_bundle(model: ForecastModel, calibrator: ConformalCalibrator,
@@ -50,6 +77,7 @@ def save_bundle(model: ForecastModel, calibrator: ConformalCalibrator,
         "data_origin": "SYNTHETIC",
     }
     joblib.dump(bundle, path)
+    _write_digest(path)
     return path
 
 
@@ -59,6 +87,7 @@ def load_bundle(path: Union[str, Path] = DEFAULT_ARTIFACT) -> Tuple[ForecastMode
         raise ArtifactNotFoundError(
             f"Model artifact not found at {path}. Train one first: python examples/train_demo.py")
     try:
+        _verify_digest(path)
         b = joblib.load(path)
         if b.get("format_version") != FORMAT_VERSION:
             raise ArtifactIncompatibleError(f"Artifact format {b.get('format_version')} != expected {FORMAT_VERSION}.")

@@ -9,7 +9,7 @@ from aquapredict.eval.harness import evaluate
 from aquapredict.baselines.baselines import BASELINES
 from aquapredict.eval.criteria import check_success
 from aquapredict.integration import (to_p2_readings, history_to_p2, training_frame, train_person2_on_person1,
-                                     Person2Forecaster, STAGE_TO_P2, PRESSURE_SOURCES)
+                                     Person2Forecaster, STAGE_TO_P2, PRESSURE_SOURCES, training_frames_by_stage)
 from aquapredict.integration import train as train_mod
 from aquapredict.integration.adapter import P2_COLUMNS
 
@@ -103,6 +103,21 @@ def test_training_frame_structure_and_no_cross_cycle_mixing(world):
     real = tf.household_id.str.split("~").str[0]
     assert set(real) <= set(world["tr"].household_id)                              # only training households appear
     assert not set(real) & set(world["te"].household_id)
+
+
+def test_integration_training_is_per_stage_and_writes_stage_bundles(world):
+    frames = training_frames_by_stage(world["tr"])
+    assert set(frames) == set(STAGE_TO_P2.values())
+    assert all(frame.filter_stage.nunique() == 1 for frame in frames.values())
+    assert len(world["f"].bundle_paths) == len(STAGE_TO_P2)
+    assert len(set(world["f"].bundle_paths.values())) == len(STAGE_TO_P2)
+    assert all(world["f"].selected_models[s] == "gradient_boosting" for s in STAGE_TO_P2.values())
+
+
+def test_model_selection_requires_a_disjoint_development_split(world, tmp_path):
+    with pytest.raises(ValueError, match="development_df"):
+        train_person2_on_person1(world["tr"], world["ca"], tmp_path / "x.joblib",
+                                 max_iter=5, select_model=True)
 
 
 def test_overlapping_households_between_train_and_calibration_are_refused(world, tmp_path):

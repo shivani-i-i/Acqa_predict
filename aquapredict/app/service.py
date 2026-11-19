@@ -346,7 +346,11 @@ class AquaService:
         h = self.household(hid)
         day = h["now_day"] if day is None else int(day)
         hist = self.history(hid, day)
+        if stage == "carbon":
+            model = "volume_rule"
         fc = self._forecaster(model, explain).run(hist, stage)
+        if stage == "carbon" and fc["status"] != "withheld":
+            fc["reason"] = "Carbon has no direct sensor signal; using the volume rule. No calibrated interval is shown."
         events = check_readings(hist, stage)
         ind = self.indicators(hid, stage, day)
         fc.update({"household_id": hid, "day": day, "indicator": ind, "sensor_events": events,
@@ -662,7 +666,7 @@ class AquaService:
             if m not in baselines + ["reference_v3", "person2"]:
                 raise BadRequest(f"unknown method '{m}'")
         for m in learned:
-            if not os.path.exists(self.registry._paths()[m]):
+            if not self.registry.is_available(m):
                 raise Conflict(f"model '{m}' has not been trained yet")
             if self.registry.train_seed(m) == int(seed):
                 raise BadRequest(f"seed {seed} was used to train '{m}'; pick a different seed so the households are unseen")

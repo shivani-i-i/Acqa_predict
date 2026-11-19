@@ -1,110 +1,278 @@
-# AquaPredict - combined project (Person 1 + Person 2 + Person 3)
+# AquaPredict
 
-**Atomberg Innovation Challenge - Track 2: Water Purifiers.** Software prototype that forecasts filter maintenance for connected
-purifiers: *when* a filter reaches its replacement criterion, *how sure* (calibrated interval where justified), *why* (drivers), and
-whether a reading looks like a *sensor fault* instead of wear.
+## Synthetic filter-life forecasting for connected water purifiers
 
-> Purifier telemetry is source-labeled. Synthetic households are simulator data and are not real Atomberg telemetry. Uploaded
-> household telemetry remains separate from the optional live USGS environmental context. Neither public environmental data nor
-> simulator output is converted into purifier filter-life labels. Results show algorithmic feasibility, not real-world accuracy.
-> Nothing here assesses water safety.
+AquaPredict is an Atomberg Innovation Challenge Track 2 prototype for forecasting
+when purifier filters may reach a simulated replacement criterion. It combines
+simulation, baseline rules, machine-learning forecasting, sensor-quality checks,
+an evaluation harness, a FastAPI service, and a Streamlit dashboard.
 
-## What is in the repo
-| Package | Owner | What it does |
-|---|---|---|
-| `aquapredict/simulator`, `baselines`, `eval`, `planner`, `export.py`, `validate.py` | Person 1 | Household simulator (10 scenarios + custom, 2 wear laws, labelled faults), the 3 baselines, strict household-level evaluation harness with the abstract's 3 success criteria, stress tests, cost planner, exports |
-| `aquapredict/forecasting` | Person 2 | `predict()` -> forecast, conformal interval, SHAP drivers, sensor-fault events, CUSUM source-change flag, status (`ok`/`degraded`/`withheld`) + reason; drift monitoring; its own simulator, training and demo scripts. Its own README: `aquapredict/forecasting/README.md` |
-| `aquapredict/integration` | bridge | Adapter from Person 1's data to Person 2's schema, trainer, and a forecaster wrapper so **Person 2's real `predict()` is scored by Person 1's evaluation** |
-| `aquapredict/reference_model`, `aquapredict/checks` | Person 1 | A *stand-in* forecaster I built before Person 2's code existed. Kept as a comparison; it does not replace Person 2's model |
-| `aquapredict/app` | Person 3 | SQLite persistence, service layer, FastAPI backend, Streamlit dashboard (dashboard, filter detail, simulator and what-if, alerts, planner and costs, validation lab, models, export), model registry and training. See `docs/APP.md` |
-| `docs/`, `docs_results/` | | Simulator documentation (every parameter + evidence status), measured results and caveats |
+> **Important:** all benchmark households and labels in this repository are
+> synthetic. Reported metrics describe algorithmic behavior on these simulators,
+> not real-world accuracy or production reliability. AquaPredict does not assess
+> water safety, potability, contaminant removal, or health risk.
 
-## How the pieces fit
+## What the project provides
+
+### 1. Synthetic household simulator
+
+`aquapredict/simulator` generates reproducible purifier households with:
+
+- usage patterns including normal, vacation-heavy, high-use, and irregular homes;
+- multiple sensor channels such as pressure drop, flow, TDS, temperature, and
+  inlet pressure;
+- filter replacement events and hidden simulator truth;
+- configurable wear laws, scenarios, seeds, and labelled fault injections;
+- separate simulated stages for sediment, carbon, and RO membrane behavior.
+
+The simulator is a controlled research environment. Its hidden end-of-life
+labels are used only by evaluation code and demo views; they are not inferred
+from USGS observations.
+
+### 2. Three transparent baselines
+
+`aquapredict/baselines` implements simple methods that are deliberately easy to
+inspect:
+
+- **Trend:** extrapolates a normalized wear indicator;
+- **Volume rule:** uses rated cumulative usage and age;
+- **20% health rule:** raises a maintenance recommendation when usage or age
+  reaches the configured health threshold.
+
+Every learned model is compared with these baselines. A complex model is not
+automatically considered better than a transparent rule.
+
+### 3. Forecasting pipeline
+
+`aquapredict/forecasting` exposes the stable public function:
+
+```python
+from aquapredict.forecasting.predict import predict
+
+response = predict({
+    "filter_stage": "sediment",
+    "household_id": "H001",
+    "history": readings,
+    "explain": True,
+})
 ```
-Person 1 simulator --> telemetry (+ hidden truth) --> household-level split (train / calibration / test)
-                                   |                                   |
-                                   |                    integration.adapter (column mapping, cut to current filter)
-                                   |                                   v
-                                   |              Person 2: features -> forecast -> conformal interval -> gating,
-                                   |                        sensor faults, CUSUM, SHAP     (predict())
-                                   v                                   |
-              Person 1 harness: gives forecasters PAST, label-free data only, scores against hidden truth
-                      -> window error, late / premature warnings, interval coverage + width, PASS/FAIL criteria
-```
-Person 2 ships its **own** simulator (volume-based replacement at 80% capacity). Both simulators are kept: Person 2's demos use theirs;
-the integration evaluation uses Person 1's (replacement criteria from sensor-like signals: pressure drop, flux, rejection, carbon load).
 
-## Setup (Python 3.10+)
-Windows PowerShell:
+The response contains a point forecast, an optional conformal interval, sensor
+fault events, a source-change signal, status, reason, and disclaimer. The
+pipeline includes:
+
+- input and history validation;
+- feature engineering from label-free telemetry;
+- gradient-boosted forecasting;
+- split-conformal uncertainty intervals where justified;
+- sensor-fault detection for stuck, drifting, spiking, dropped, or inverted
+  signals;
+- CUSUM-style source or operating-condition change detection;
+- optional SHAP drivers;
+- explicit `ok`, `degraded`, and `withheld` statuses.
+
+The function does not silently convert invalid input into a success-shaped
+forecast. If data quality or history is insufficient, it withholds the result.
+
+### 4. Integration layer
+
+`aquapredict/integration` adapts the simulator's telemetry to the forecasting
+pipeline and lets the real forecasting interface run through the project
+evaluation harness.
+
+The integration supports:
+
+- current-filter history cutting;
+- vacation/no-flow handling;
+- stage-specific training artifacts;
+- disjoint training and calibration households;
+- development-only pressure-source and model selection;
+- baseline fallback when a learned model does not win on development data;
+- the original harness contract:
+  `{point, lo, hi, withheld, reason, status}`.
+
+The pressure mapping is an explicit sensor-wiring assumption. It must not be
+interpreted as a fact about deployed purifier hardware.
+
+### 5. Reference comparison model
+
+`aquapredict/reference_model` is a separately maintained comparison forecaster.
+It is retained because a simpler model can outperform the integrated pipeline on
+some synthetic benchmark splits. It is not deleted or presented as a
+production model.
+
+### 6. Strict evaluation
+
+`aquapredict/eval` evaluates forecasts using past readings only and scores fresh
+synthetic households. The evaluation reports:
+
+- median absolute window error;
+- late-warning percentage;
+- premature-warning percentage;
+- conformal coverage;
+- interval width;
+- error as a percentage of simulated filter lifetime;
+- stage-level and method-level summaries;
+- asymmetric alert-cost summaries.
+
+The success criteria are evaluated against held-out synthetic households. No
+test household is used for model fitting, pressure selection, or threshold
+tuning.
+
+### 7. FastAPI backend
+
+`aquapredict/app/api.py` provides:
+
+- health and scenario metadata;
+- model availability and training;
+- household creation and simulator controls;
+- telemetry ingestion;
+- forecasts, prediction history, and data-quality views;
+- sensor events and alert actions;
+- maintenance planning and cost estimates;
+- validation-lab runs;
+- CSV export;
+- optional USGS environmental context.
+
+The API is a prototype boundary. Configure `AQUAPREDICT_API_KEY` for
+environment-based API-key authentication and `AQUAPREDICT_RATE_LIMIT` for a
+per-client request limit. In production, long model-training and validation
+jobs should run through a durable background worker and persistent database.
+
+### 8. Streamlit dashboard
+
+`aquapredict/app/ui/streamlit_app.py` provides a working operational view with:
+
+- a dashboard for system health and maintenance windows;
+- filter detail pages with forecasts, drivers, intervals, and sensor events;
+- simulator controls and what-if comparisons;
+- alert acknowledgement, resolution, and dismissal;
+- maintenance planning and cost analysis;
+- a validation lab with fresh synthetic households;
+- model cards and availability;
+- data upload, export, and USGS context.
+
+Carbon is intentionally handled differently: the simulator has no direct carbon
+wear sensor. The UI routes carbon to a volume rule, hides a misleading
+confidence interval, and explains that policy to the user.
+
+## Architecture
+
+```text
+Synthetic simulator
+        |
+        v
+Telemetry + hidden demo truth
+        |
+        +--> Transparent baselines --------------------+
+        |                                               |
+        +--> Reference model                            |
+        |                                               v
+        +--> Integration adapter --> Forecasting --> Evaluation harness
+                                      |       |
+                                      |       +--> intervals, faults, drivers
+                                      |
+                                      +--> Model registry --> FastAPI
+                                                           |
+                                                           +--> Streamlit UI
+```
+
+Uploaded purifier telemetry is kept separate from simulator truth. Optional
+USGS data is environmental context only and is never used to create filter-life
+labels.
+
+## Setup
+
+Python 3.10 or newer is recommended.
+
+### Windows PowerShell
+
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 pip install -r requirements-full.txt
-pip install shap        # optional: SHAP drivers
+pip install shap
 ```
-Mac/Linux: `python3 -m venv .venv && source .venv/bin/activate && pip install -r requirements-full.txt`
 
-## Run the application (Person 3)
+SHAP is optional. The application still runs without it, but driver explanations
+may be unavailable.
+
+### macOS/Linux
+
 ```bash
-streamlit run aquapredict/app/ui/streamlit_app.py      # dashboard; create a demo household on first launch
-uvicorn aquapredict.app.api:app --port 8000            # REST API, docs at /docs
-```
-Details, architecture and limitations: `docs/APP.md`.
-
-### Deploying
-
-The FastAPI backend includes a Vercel entrypoint at `api/index.py` and can be
-deployed to Vercel as a Python Function. After deployment, use:
-
-```text
-https://YOUR-VERCEL-DOMAIN.vercel.app/docs
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements-full.txt
+pip install shap
 ```
 
-The Streamlit dashboard is not a Vercel runtime. Deploy it separately on
-Streamlit Community Cloud (select
-`aquapredict/app/ui/streamlit_app.py`) or run it with the local command above.
-The default SQLite database is local/ephemeral in serverless environments;
-use an external database before treating a Vercel deployment as production.
+## Run the application
 
-### Public online water-quality context
-
-The Data & export page and `GET /sources/usgs/observations?site=01646500` can fetch the latest
-observations from the official USGS National Water Information System. The default station is
-the Potomac River near Washington, DC (`01646500`). The response preserves the station,
-timestamp, parameter code, unit, qualifier, and source URL.
-
-USGS observations are environmental measurements, not household purifier telemetry. In
-particular, specific conductance is not silently converted to TDS, and the observations
-cannot produce filter replacement labels. Upload purifier telemetry through the existing
-CSV workflow or `POST /telemetry/ingest` for filter forecasting.
-
-## Run the other parts
 ```bash
-python -m pytest -q                                              # whole suite (Person 1 + Person 2 + integration)
-python -m aquapredict.eval.run_baselines --n 150 --seed 0 --calibrated --out results_calibrated   # baselines, strict metrics
-python -m aquapredict.forecasting.examples.train_demo            # Person 2: train + calibrate + evaluate on ITS simulator
-python -m aquapredict.forecasting.examples.run_demo              # Person 2: six predict() scenarios
-python -m aquapredict.integration.evaluate --n 160 --seed 21     # Person 2's model on Person 1's simulator, strict criteria (~10-15 min on one CPU)
-```
-`make test | test-p1 | test-p2 | integrate | ...` where `make` exists.
-
-## Using Person 2's model on Person 1's data
-```python
-from aquapredict.integration import train_person2_on_person1, Person2Forecaster
-f = train_person2_on_person1(train_df, cal_df, "artifacts/bundle.joblib")   # disjoint households
-f.respond(history_df, "sediment")      # Person 2's full response: forecast, interval, drivers, fault events, status, reason
-f(history_df, "ro")                    # the harness contract: {point, lo, hi, withheld, reason, status}
+streamlit run aquapredict/app/ui/streamlit_app.py
+uvicorn aquapredict.app.api:app --port 8000
 ```
 
-## Assumptions made in the integration (state them wherever results are quoted)
-- **Pressure channel (matters a lot).** Person 2 has one `pressure` input; Person 1 has inlet pressure and the sediment pressure *drop*. The adapter
-  default is the raw drop (`dp`). The more "natural" `inlet - drop` mapping buries the wear signal under inlet-pressure noise and doubled the median
-  error (59 vs 30 days, 48 held-out households). `--pressure-source downstream|dp|inlet` switches it. `dp` was chosen after seeing held-out results from
-  seed 21 and then replicated on a fresh seed (`docs_results/RESULTS.md`). It is an assumption about sensor wiring, not a fact about real hardware.
-- **Vacation (no-flow) days** carry no readings in Person 1's data; the adapter omits them so a holiday is not read as a failing sensor.
-- **History must start at filter installation** (Person 2's requirement); the adapter cuts to the current filter using the visible age column.
-- Person 2's model is **re-trained on Person 1's training households** (pooled across stages) and calibrated on separate households; test
-  households are never used before scoring.
-- Person 2's gate allows a forecast from as few as 3 readings; Person 1's harness never asks before 14 days. For real use, raise it.
+The API's interactive documentation is available at `/docs`.
 
-More detail: `docs/PERSON1.md` (Person 1 module guide), `docs/SIMULATOR.md`, `docs_results/RESULTS.md`, `aquapredict/forecasting/README.md`.
+The Vercel entrypoint is intentionally limited to the public health and USGS
+context routes. The full FastAPI service and Streamlit dashboard should be
+deployed separately, with persistent storage and authentication configured
+before any non-demo use.
+
+## Run tests and experiments
+
+```bash
+python -m pytest -q
+python -m aquapredict.eval.run_baselines --n 150 --seed 0 --calibrated --out results_calibrated
+python -m aquapredict.forecasting.examples.train_demo
+python -m aquapredict.forecasting.examples.run_demo
+python -m aquapredict.integration.evaluate --n 160 --seed 21
+```
+
+The integration evaluation can take several minutes on one CPU. Use a fresh
+seed when measuring generalization. Never tune a model or selection policy on
+the households used for the final report.
+
+## Model artifacts and integrity
+
+Learned artifacts are pickle/joblib files and therefore must only be loaded
+from trusted locations. Saved artifacts have SHA-256 sidecars. Loading rejects
+missing or mismatched sidecars so accidental or unauthorized changes do not
+silently become executable model code.
+
+Retrain artifacts when the feature schema, scikit-learn version, or training
+configuration changes.
+
+## Synthetic benchmark status
+
+The repository's earlier integrated benchmark showed that the integrated model
+did not meet all three target criteria: it over-predicted remaining life,
+produced too many premature alerts, and produced wide intervals. The reference
+comparison model performed better on that synthetic split. These findings are
+kept as limitations rather than presented as real-world accuracy claims.
+
+Always read:
+
+- [`docs/AUDIT.md`](docs/AUDIT.md) for the evidence-based audit;
+- [`docs_results/RESULTS.md`](docs_results/RESULTS.md) for benchmark definitions
+  and caveats;
+- [`docs/APP.md`](docs/APP.md) for application behavior;
+- [`aquapredict/forecasting/README.md`](aquapredict/forecasting/README.md) for
+  the forecasting API and response schema.
+
+## Data and safety boundaries
+
+- Simulator data is synthetic and labelled for controlled evaluation.
+- Uploaded telemetry is treated as source-labelled household data.
+- USGS observations are public environmental context only.
+- USGS observations are never turned into filter-life labels.
+- Forecasts are maintenance estimates, not water-quality or health decisions.
+- A forecast interval is not a guarantee.
+- Sensor faults and distribution shift can invalidate a forecast.
+
+## License and contribution notes
+
+This repository is an innovation-challenge prototype. Before production use,
+review the data-governance, authentication, persistence, artifact-loading,
+observability, and deployment requirements for the target environment.
