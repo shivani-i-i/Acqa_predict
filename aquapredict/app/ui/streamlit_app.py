@@ -1628,6 +1628,108 @@ body section[data-testid="stMain"] .ap-topnav label:hover {
   color: #ffffff !important;
   background: rgba(67, 217, 210, .09) !important;
 }
+
+/* Calm water-portal theme: navy header, pale workspace, restrained blue accents. */
+body,
+html,
+body .stApp,
+body section[data-testid="stMain"] {
+  background: #f5f9fc !important;
+  color: #17324d !important;
+}
+
+body section[data-testid="stMain"] p,
+body section[data-testid="stMain"] label,
+body section[data-testid="stMain"] li,
+body section[data-testid="stMain"] [data-testid="stMarkdownContainer"] {
+  color: #17324d !important;
+}
+
+body section[data-testid="stMain"] h1,
+body section[data-testid="stMain"] h2,
+body section[data-testid="stMain"] h3,
+body section[data-testid="stMain"] h4 {
+  color: #17324d !important;
+}
+
+body section[data-testid="stMain"] [data-testid="stHorizontalBlock"]:has(.ap-commandbar__brand) {
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: #ffffff !important;
+  box-shadow: 0 2px 12px rgba(24, 58, 88, .10) !important;
+}
+
+body section[data-testid="stMain"] .ap-utilitybar {
+  background: #294f6b !important;
+  color: #f5fbff !important;
+}
+
+body section[data-testid="stMain"] .ap-commandbar__brand,
+body section[data-testid="stMain"] .ap-commandbar__brand div {
+  color: #17324d !important;
+}
+
+body section[data-testid="stMain"] .ap-commandbar__brand span {
+  color: #236d9e !important;
+}
+
+body section[data-testid="stMain"] .ap-topnav [data-testid="stRadioOption"],
+body section[data-testid="stMain"] .ap-topnav [data-testid="stRadioOption"] p,
+body section[data-testid="stMain"] .ap-topnav [data-testid="stRadioOption"] span,
+body section[data-testid="stMain"] .ap-topnav label {
+  color: #42627d !important;
+}
+
+body section[data-testid="stMain"] .ap-topnav [data-testid="stRadioOption"][data-selected="true"],
+body section[data-testid="stMain"] .ap-topnav [data-testid="stRadioOption"][data-selected="true"] p,
+body section[data-testid="stMain"] .ap-topnav [data-testid="stRadioOption"][data-selected="true"] span,
+body section[data-testid="stMain"] .ap-topnav label:has(input:checked) {
+  color: #0b639c !important;
+  background: #e7f3fa !important;
+  border-bottom-color: #0b74b8 !important;
+}
+
+body section[data-testid="stMain"] [data-testid="stMetric"],
+body section[data-testid="stMain"] [data-testid="stVerticalBlockBorderWrapper"],
+body section[data-testid="stMain"] .ap-tile,
+body section[data-testid="stMain"] .ap-bento,
+body section[data-testid="stMain"] .ap-spatial {
+  border: 1px solid #d5e2eb !important;
+  border-radius: 14px !important;
+  background: #ffffff !important;
+  box-shadow: 0 4px 16px rgba(24, 58, 88, .08) !important;
+}
+
+body section[data-testid="stMain"] [data-testid="stMetricLabel"],
+body section[data-testid="stMain"] [data-testid="stMetricLabel"] p,
+body section[data-testid="stMain"] .ap-tile__label,
+body section[data-testid="stMain"] .ap-tile__meta,
+body section[data-testid="stMain"] .ap-spatial__title,
+body section[data-testid="stMain"] [data-testid="stCaptionContainer"],
+body section[data-testid="stMain"] [data-testid="stCaptionContainer"] p {
+  color: #5a7892 !important;
+}
+
+body section[data-testid="stMain"] [data-testid="stMetricValue"],
+body section[data-testid="stMain"] [data-testid="stMetricValue"] div,
+body section[data-testid="stMain"] .ap-tile__value {
+  color: #17324d !important;
+}
+
+body section[data-testid="stMain"] .ap-tile--hero {
+  background: linear-gradient(135deg, #edf7fb, #ffffff) !important;
+}
+
+body section[data-testid="stMain"] .ap-hero {
+  background: linear-gradient(110deg, #28516f, #347fa8) !important;
+  border-color: #2e6e94 !important;
+}
+
+body section[data-testid="stMain"] .ap-note {
+  border-color: #c8dce8 !important;
+  background: #eef7fb !important;
+  color: #31536c !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
