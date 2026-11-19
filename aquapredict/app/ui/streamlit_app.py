@@ -1535,6 +1535,42 @@ section[data-testid="stMain"] [data-testid="stAlert"] p,
 section[data-testid="stMain"] [data-testid="stAlert"] div {
   color: #edf7ff !important;
 }
+
+body section[data-testid="stMain"] h1,
+body section[data-testid="stMain"] h2,
+body section[data-testid="stMain"] h3,
+body section[data-testid="stMain"] h4,
+body section[data-testid="stMain"] h5,
+body section[data-testid="stMain"] h6,
+body section[data-testid="stMain"] h1 *,
+body section[data-testid="stMain"] h2 *,
+body section[data-testid="stMain"] h3 *,
+body section[data-testid="stMain"] h4 * {
+  color: #ffffff !important;
+  opacity: 1 !important;
+}
+
+body section[data-testid="stMain"] .ap-topnav button,
+body section[data-testid="stMain"] .ap-topnav button *,
+body section[data-testid="stMain"] [data-testid="stRadio"] button,
+body section[data-testid="stMain"] [data-testid="stRadio"] button *,
+body section[data-testid="stMain"] [data-testid="stTabs"] button,
+body section[data-testid="stMain"] [data-testid="stTabs"] button * {
+  color: #dceeff !important;
+  opacity: 1 !important;
+}
+
+body section[data-testid="stMain"] .ap-topnav button[aria-checked="true"],
+body section[data-testid="stMain"] .ap-topnav button[aria-selected="true"],
+body section[data-testid="stMain"] [data-testid="stTabs"] button[aria-selected="true"] {
+  color: #63e7dd !important;
+  border-color: #43d9d2 !important;
+}
+
+body section[data-testid="stMain"] [data-testid="stMarkdownContainer"] strong,
+body section[data-testid="stMain"] [data-testid="stMarkdownContainer"] b {
+  color: #ffffff !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
