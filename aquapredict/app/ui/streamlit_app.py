@@ -2068,6 +2068,19 @@ def ui_subheader(title):
     )
 
 
+def ui_metric(label, value):
+    st.markdown(
+        f'<div class="ap-explicit-metric" style="background:#ffffff !important;'
+        f'border:1px solid #d5e2eb;border-radius:12px;padding:.8rem 1rem;min-height:5rem;">'
+        f'<div style="color:#52718b !important;-webkit-text-fill-color:#52718b !important;'
+        f'font-size:.76rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;">{label}</div>'
+        f'<div style="color:#17324d !important;-webkit-text-fill-color:#17324d !important;'
+        f'font-size:1.15rem;font-weight:700;margin-top:.35rem;overflow-wrap:anywhere;">{value}</div>'
+        f'</div>',
+        unsafe_allow_html=True,
+    )
+
+
 def page_dashboard():
     D = svc.dashboard(hid, model)
     st.markdown(
@@ -2229,9 +2242,12 @@ def page_filter_detail():
     st.markdown(spatial_twin(svc.dashboard(hid, model), svc.readings(hid, last=1).iloc[0], stage), unsafe_allow_html=True)
     st.caption("The highlighted cartridge is the selected filter stage. This procedural 3D view is a visual aid; forecast values come from the service layer.")
     c = st.columns(3)
-    c[0].metric("Forecast status", fc["status"].replace("_", " "))
-    c[1].metric("Sensor health", BADGE[fc["sensor_health"]])
-    c[2].metric("Model", labels[fc["model"]])
+    with c[0]:
+        ui_metric("Forecast status", fc["status"].replace("_", " "))
+    with c[1]:
+        ui_metric("Sensor health", BADGE[fc["sensor_health"]])
+    with c[2]:
+        ui_metric("Model", labels[fc["model"]])
     st.write(f"**Reliability:** {fc['reliability']}")
     st.caption(f"Interval basis: {fc['interval_status'] or 'n/a'}  ·  model version: {fc['model_version']}")
     if stage == "carbon":
