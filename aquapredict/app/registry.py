@@ -24,7 +24,7 @@ DISCLAIMER = ("SYNTHETIC-data prototype: not validated on real purifier telemetr
               "not assess water safety, potability or contaminant removal.")
 BASELINE_LABELS = {"trend": "Trend extrapolation (baseline)", "volume_rule": "Volume rule (baseline)",
                    "health_20pct": "20% health threshold (baseline)"}
-LABELS = {**BASELINE_LABELS, "reference_v3": "Reference model v3 (Person 1 stand-in)", "person2": "Person 2 model (integrated)"}
+LABELS = {**BASELINE_LABELS, "reference_v3": "Reference model v3 (comparison)", "person2": "Integrated forecasting model"}
 
 # Reported results on the synthetic benchmark, with provenance. They are NOT live numbers: the Validation Lab recomputes.
 MODEL_CARDS = {

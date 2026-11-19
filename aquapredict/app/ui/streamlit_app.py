@@ -1742,8 +1742,15 @@ def page_filter_detail():
         if fc["explanation"] and fc["explanation"].get("available"):
             st.write(fc["explanation"].get("summary", ""))
         if not fc["drivers"]:
-            st.caption("This model does not provide per-forecast drivers. Select 'Person 2 model' (trained) for drivers; "
-                       "the filter-condition line above is the sensor-based evidence for this stage.")
+            if stage == "carbon":
+                st.info("Carbon is estimated with the usage rule because this simulator has no direct carbon-wear sensor. "
+                        "There are no sensor drivers or confidence interval to display for this stage.")
+            elif fc["model"] in ("trend", "volume_rule", "health_20pct", "reference_v3"):
+                st.caption("This selected model does not return per-forecast driver rankings. "
+                           "Use the filter-condition line above as the sensor-based evidence for this stage.")
+            else:
+                st.caption("No driver explanation was returned for this forecast. "
+                           "Review the filter condition and sensor-quality panels below.")
         sc = fc.get("source_change")
         if sc and sc.get("detected"):
             st.warning(f"Possible water-source or operating-condition change: {sc.get('message', '')} (statistical signal only)")
