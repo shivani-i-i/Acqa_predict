@@ -24,7 +24,15 @@ type Dashboard = {
 };
 
 async function api<T>(path: string, init?: RequestInit): Promise<T> {
-  const response = await fetch(`${API}${path}`, { ...init, headers: { "Content-Type": "application/json", ...(init?.headers || {}) } });
+  const apiKey = process.env.NEXT_PUBLIC_API_KEY;
+  const response = await fetch(`${API}${path}`, {
+    ...init,
+    headers: {
+      "Content-Type": "application/json",
+      ...(apiKey ? { "x-api-key": apiKey } : {}),
+      ...(init?.headers || {}),
+    },
+  });
   if (!response.ok) throw new Error((await response.json().catch(() => ({}))).detail || `Request failed (${response.status})`);
   return response.json();
 }

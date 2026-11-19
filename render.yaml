@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: aquapredict-api
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements-full.txt
+    startCommand: uvicorn aquapredict.app.api:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: AQUAPREDICT_HOME
+        value: /var/data/aquapredict
+      - key: AQUAPREDICT_FRONTEND_ORIGIN
+        sync: false
+      - key: AQUAPREDICT_API_KEY
+        sync: false

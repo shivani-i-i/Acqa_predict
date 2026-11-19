@@ -245,6 +245,31 @@ context routes. The full FastAPI service and Streamlit dashboard should be
 deployed separately, with persistent storage and authentication configured
 before any non-demo use.
 
+### Deploy the 3D web frontend and full API
+
+The Next.js frontend is deployable as a separate Vercel project:
+
+1. Import this repository into Vercel.
+2. Set **Root Directory** to `web`.
+3. Set `NEXT_PUBLIC_API_URL` to the public Render API URL.
+4. If `AQUAPREDICT_API_KEY` is enabled on Render, set the matching
+   `NEXT_PUBLIC_API_KEY` in Vercel. This key is exposed to the browser, so use
+   it only for a controlled demo; production deployments should use a
+   user-session authentication layer.
+5. Deploy.
+
+The full FastAPI service is configured in [`render.yaml`](render.yaml):
+
+1. Create a Render Blueprint from this repository.
+2. Set `AQUAPREDICT_FRONTEND_ORIGIN` to the Vercel URL.
+3. Set a strong `AQUAPREDICT_API_KEY`.
+4. Redeploy the Vercel project with the same API key if protected API calls are
+   enabled in the frontend.
+
+The existing root Vercel function remains the small public health/USGS
+endpoint. It is not the full forecasting backend. Use the Render URL for
+households, forecasts, alerts, planning, validation, and model operations.
+
 ## Run tests and experiments
 
 ```bash
