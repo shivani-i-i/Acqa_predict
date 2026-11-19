@@ -1112,6 +1112,18 @@ section[data-testid="stMain"] [data-testid="stHorizontalBlock"]:has(.ap-commandb
   color: #c9dced;
 }
 
+.ap-utilitybar__version {
+  display: inline-flex;
+  align-items: center;
+  padding: .18rem .45rem;
+  border: 1px solid rgba(255,255,255,.28);
+  border-radius: 999px;
+  color: #ffffff !important;
+  font-size: .62rem;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
 .ap-brandline {
   display: flex;
   align-items: center;
@@ -1863,7 +1875,8 @@ if households:
         '<div class="ap-utilitybar">'
         '<div class="ap-utilitybar__left"><strong>Purifier care centre</strong>'
         '<span>Monitor your purifier. Plan service with confidence.</span></div>'
-        '<div class="ap-utilitybar__right"><span>Help & support</span><span>About AquaPredict</span></div>'
+        '<div class="ap-utilitybar__right"><span>Help & support</span><span>About AquaPredict</span>'
+        '<span class="ap-utilitybar__version">UI refreshed</span></div>'
         '</div>',
         unsafe_allow_html=True,
     )
