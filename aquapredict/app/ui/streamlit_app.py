@@ -1872,6 +1872,19 @@ def page_dashboard():
     st.markdown(spatial_twin(D, latest, focus), unsafe_allow_html=True)
     dq = D["data_quality"]
     stale = {k: v for k, v in dq["days_since_valid_reading"].items() if v and v > 0}
+    with st.container(border=True):
+        st.markdown("#### Data health & provenance")
+        st.caption("A quick check of the readings currently supporting the forecast. This does not measure water safety.")
+        health_cols = st.columns(4)
+        health_cols[0].metric("Source", "Synthetic" if D["household"]["source"] == "synthetic" else "Uploaded")
+        health_cols[1].metric("Last reading day", dq["last_day"])
+        health_cols[2].metric("Idle today", "Yes" if dq["idle_today"] else "No")
+        missing = [v for v in dq["missing_share_last_14_active_days"].values() if v is not None]
+        health_cols[3].metric("Missing sensor share", f"{max(missing) * 100:.0f}%" if missing else "--")
+        if stale:
+            st.warning("Stale sensors: " + ", ".join(f"{name} ({days}d)" for name, days in stale.items()))
+        else:
+            st.success("All monitored sensors have a valid recent reading.")
     st.caption(f"Latest reading: day {dq['last_day']}" + (" · idle day: no water drawn" if dq["idle_today"] else "")
                + (f"  ·  stale sensors (days since valid reading): {stale}" if stale else "  ·  all sensors reporting"))
     st.markdown(

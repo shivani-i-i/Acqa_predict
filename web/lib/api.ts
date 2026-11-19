@@ -35,6 +35,12 @@ export interface Dashboard {
   stages: Record<Stage, DashboardStage>;
   open_alerts: number;
   upcoming_maintenance: Array<{ stage: Stage; status: string; window_lo: number | null; window_hi: number | null }>;
+  data_quality: {
+    last_day: number;
+    days_since_valid_reading: Record<string, number | null>;
+    missing_share_last_14_active_days: Record<string, number | null>;
+    idle_today: boolean;
+  };
   disclaimer: string;
 }
 
@@ -53,6 +59,7 @@ interface DashboardResponse {
   }>;
   open_alerts: number;
   upcoming_maintenance: Dashboard["upcoming_maintenance"];
+  data_quality: Dashboard["data_quality"];
   disclaimer: string;
 }
 

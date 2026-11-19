@@ -181,6 +181,72 @@ Uploaded purifier telemetry is kept separate from simulator truth. Optional
 USGS data is environmental context only and is never used to create filter-life
 labels.
 
+## Function-level data flow
+
+The following is the runtime path for a forecast. Names below are the public
+functions or the main orchestration functions a maintainer should inspect.
+
+1. **Create or load a household**
+   - `AquaService.create_household()` validates the requested scenario and
+     stores source metadata in SQLite.
+   - `Simulator.generate_household()` creates reproducible readings from the
+     seed. Synthetic truth is stored separately from observed telemetry.
+   - `AquaService.history()` returns only the readings available at the
+     requested day; it is the boundary that prevents future readings entering a
+     forecast.
+2. **Check telemetry**
+   - `data_quality()` measures the latest valid reading, recent missingness,
+     and idle days.
+   - `check_readings()` identifies stuck, drifting, spiking, dropped, and
+     inverted sensors.
+   - `AquaService.indicators()` derives stage condition from sensor evidence.
+     Carbon deliberately uses cumulative volume because it has no direct wear
+     sensor in the simulator.
+3. **Generate a forecast**
+   - `AquaService.forecast()` selects the requested registry model, applies the
+     carbon volume-rule policy, runs the stable forecasting interface, and
+     attaches sensor events, reliability, recommendation, and provenance.
+   - `AquaService.forecast_all()` calls that function for all three stages.
+   - `ModelRegistry.get()` loads only verified artifacts; the SHA-256 sidecar
+     is checked before joblib/pickle loading.
+4. **Build the dashboard**
+   - `AquaService.dashboard()` combines household metadata, stage forecasts,
+     data quality, open alerts, and maintenance windows into one response.
+   - `web/lib/api.ts` normalizes the backend's flat stage response into the
+     typed `Dashboard` shape used by the Next.js UI. This keeps API contracts
+     in one client instead of duplicating them in components.
+   - `streamlit_app.py::page_dashboard()` renders the same service response,
+     including the Data health & provenance panel.
+5. **Evaluate without leakage**
+   - `generate_dataset()` creates fresh synthetic households.
+   - `evaluate()` cuts each history at the forecast day and scores only
+     information available at that point.
+   - `run_validation()` rejects a learned model when the requested validation
+     seed equals its training seed.
+   - `check_success()` and the metric helpers report window error, late and
+     premature alerts, interval coverage/width, and lifetime-normalized error.
+
+### Endpoint-to-function map
+
+| HTTP route | Service function | Purpose |
+|---|---|---|
+| `GET /health` | `health()` | Liveness and source-boundary metadata |
+| `GET /households/{id}/dashboard` | `dashboard()` | UI-ready household snapshot |
+| `GET /households/{id}/forecast` | `forecast()` / `forecast_all()` | Stage forecast and explanation |
+| `GET /households/{id}/data-quality` | `data_quality()` | Missingness and freshness |
+| `GET /households/{id}/sensor-events` | `sensor_events()` | Sensor-fault evidence |
+| `GET /alerts` | `alerts()` | Alert list and audit state |
+| `POST /alerts/{id}/{action}` | `alert_action()` | Acknowledge, resolve, or dismiss |
+| `POST /households/{id}/what-if` | `what_if()` | Scenario-only forecast comparison |
+| `POST /validation/run` | `run_validation()` | Fresh synthetic evaluation |
+| `POST /models/train` | `ModelRegistry.train()` | Train and persist verified artifacts |
+
+The browser frontend does not contain a second forecasting implementation:
+`web/lib/api.ts` is an HTTP adapter, `web/app/page.tsx` is presentation/state
+orchestration, and `web/components/PurifierScene.tsx` is a visualization of
+the API values. A missing forecast is shown as withheld rather than replaced
+with a fabricated number.
+
 ## Setup
 
 Python 3.10 or newer is recommended.
