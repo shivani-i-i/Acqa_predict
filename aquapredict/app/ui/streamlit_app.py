@@ -1061,7 +1061,7 @@ section[data-testid="stMain"] [data-testid="stHorizontalBlock"]:has(.ap-commandb
 .ap-commandbar__brand {
   height: 3.1rem;
   gap: .7rem;
-  color: #102a56;
+  color: #edf7ff;
   font-family: 'DM Sans', sans-serif;
   font-size: 1.15rem;
   font-weight: 700;
@@ -1080,7 +1080,7 @@ section[data-testid="stMain"] [data-testid="stHorizontalBlock"]:has(.ap-commandb
 .ap-commandbar__brand span {
   display: block;
   margin-top: .13rem;
-  color: #667892;
+  color: #9ab4c9;
   font-size: .62rem;
   letter-spacing: .08em;
 }
@@ -1140,7 +1140,7 @@ section[data-testid="stMain"] [data-testid="stHorizontalBlock"]:has(.ap-commandb
   border: 0;
   border-bottom: 3px solid transparent;
   border-radius: 0;
-  color: #34445e;
+  color: #dceeff;
   background: transparent;
   font-size: .83rem;
   font-weight: 600;
@@ -1149,15 +1149,15 @@ section[data-testid="stMain"] [data-testid="stHorizontalBlock"]:has(.ap-commandb
 section[data-testid="stMain"] [data-testid="stHorizontalBlock"]:has(.ap-commandbar__brand) [data-testid="stRadio"] label:hover,
 .ap-topnav [data-testid="stRadio"] label:hover {
   border-bottom-color: #9dc7e8;
-  background: #f3f8fc;
+  background: rgba(67, 217, 210, .10);
   transform: none;
 }
 
 section[data-testid="stMain"] [data-testid="stHorizontalBlock"]:has(.ap-commandbar__brand) [data-testid="stRadio"] label:has(input:checked),
 .ap-topnav [data-testid="stRadio"] label:has(input:checked) {
-  border-bottom-color: #145fa5;
-  color: #104f8e;
-  background: #f1f7fc;
+  border-bottom-color: #43d9d2;
+  color: #63e7dd;
+  background: rgba(67, 217, 210, .12);
   box-shadow: none;
 }
 
@@ -1225,7 +1225,7 @@ section[data-testid="stMain"] [data-testid="stHorizontalBlock"]:has(.ap-commandb
 }
 
 h1, h2, h3, h4 {
-  color: #102a56 !important;
+  color: #edf7ff !important;
 }
 
 h1 { font-size: clamp(1.75rem, 3vw, 2.35rem); }
@@ -1247,13 +1247,13 @@ h1 { font-size: clamp(1.75rem, 3vw, 2.35rem); }
 [data-testid="stMetricLabel"] p,
 .ap-section-label,
 .ap-tile__label {
-  color: #64748b;
+  color: #a7bfd2;
 }
 
 [data-testid="stMetricValue"],
 .ap-tile__value,
 .ap-tile__meta {
-  color: #17243b !important;
+  color: #edf7ff !important;
 }
 
 [data-testid="stVerticalBlockBorderWrapper"] {
