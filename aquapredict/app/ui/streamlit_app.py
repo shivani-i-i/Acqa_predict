@@ -1720,6 +1720,9 @@ def page_filter_detail():
     except ERRORS as e:
         st.error(str(e)); return
     st.markdown(f"### {fmt_window(fc)}")
+    st.markdown('<div class="ap-section-label">Interactive purifier view</div>', unsafe_allow_html=True)
+    st.markdown(spatial_twin(svc.dashboard(hid, model), svc.readings(hid, last=1).iloc[0], stage), unsafe_allow_html=True)
+    st.caption("The highlighted cartridge is the selected filter stage. This procedural 3D view is a visual aid; forecast values come from the service layer.")
     c = st.columns(3)
     c[0].metric("Forecast status", fc["status"].replace("_", " "))
     c[1].metric("Sensor health", BADGE[fc["sensor_health"]])
