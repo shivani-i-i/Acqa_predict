@@ -1381,6 +1381,102 @@ h1 { font-size: clamp(1.75rem, 3vw, 2.35rem); }
   border-top: 1px solid #dce5ef;
   color: #718198;
 }
+
+/* Deep-ocean product dashboard treatment: dense cards, calm contrast, clear
+   hierarchy, and the 3D purifier as the visual anchor. */
+:root {
+  --ink: #edf7ff;
+  --muted: #91a9bd;
+  --aqua: #43d9d2;
+  --aqua-dark: #8af1e9;
+  --aqua-soft: #123737;
+  --navy: #edf7ff;
+  --line: rgba(166, 224, 255, .16);
+  --surface: rgba(15, 29, 48, .82);
+  --canvas: #07111f;
+  --indigo: #8b7dff;
+  --amber: #f3bb63;
+}
+
+html, body, .stApp {
+  background: #07111f !important;
+  color: var(--ink) !important;
+}
+
+[data-testid="stHeader"] {
+  background: rgba(7, 17, 31, .88) !important;
+  border-bottom: 1px solid var(--line) !important;
+  box-shadow: none !important;
+}
+
+section[data-testid="stMain"] p,
+section[data-testid="stMain"] label,
+section[data-testid="stMain"] li,
+section[data-testid="stMain"] [data-testid="stMarkdownContainer"] {
+  color: var(--ink) !important;
+}
+
+section[data-testid="stMain"] [data-testid="stHorizontalBlock"]:has(.ap-commandbar__brand) {
+  border: 1px solid var(--line) !important;
+  border-radius: 18px !important;
+  background: rgba(11, 25, 43, .9) !important;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, .24) !important;
+}
+
+.ap-utilitybar,
+.ap-commandbar__brand,
+.ap-topnav,
+.ap-bento,
+.ap-tile,
+.ap-spatial,
+.ap-hero,
+.ap-note,
+.ap-section-label {
+  color: var(--ink) !important;
+}
+
+.ap-bento,
+.ap-tile,
+.ap-spatial,
+.ap-hero {
+  border-color: var(--line) !important;
+  background: linear-gradient(145deg, rgba(20, 38, 63, .9), rgba(8, 19, 34, .94)) !important;
+  box-shadow: 0 20px 70px rgba(0, 0, 0, .22), inset 0 1px rgba(255,255,255,.04) !important;
+}
+
+.ap-tile__label,
+.ap-tile__meta,
+.ap-spatial__title,
+.ap-quiet-footer,
+.ap-note,
+.ap-section-label {
+  color: var(--muted) !important;
+}
+
+section[data-testid="stMain"] [data-baseweb="select"] > div,
+section[data-testid="stMain"] [data-baseweb="input"] > div,
+section[data-testid="stMain"] textarea,
+section[data-testid="stMain"] input {
+  color: var(--ink) !important;
+  background: rgba(8, 20, 36, .86) !important;
+  border-color: var(--line) !important;
+}
+
+section[data-testid="stMain"] [data-testid="stExpander"] {
+  color: var(--ink) !important;
+  background: rgba(15, 29, 48, .78) !important;
+  border-color: var(--line) !important;
+}
+
+section[data-testid="stMain"] [data-testid="stDataFrame"] {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.ap-quiet-footer {
+  border-top-color: var(--line) !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
