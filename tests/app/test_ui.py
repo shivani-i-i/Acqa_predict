@@ -239,9 +239,9 @@ def test_trained_models_appear_and_switching_models_works(env, trained_dir):
     no_errors(at)
     sb = at.sidebar.selectbox(key="model")
     labels = list(sb.options)
-    assert any("Reference model v3" in o for o in labels) and any("Person 2" in o for o in labels)
+    assert any("Reference model v3" in o for o in labels) and any("Integrated forecasting model" in o for o in labels)
     assert sb.value == "reference_v3"                              # best-evidence model is the default once trained
-    for needle in ("Person 2", "Reference model v3", "Trend"):
+    for needle in ("Integrated forecasting model", "Reference model v3", "Trend"):
         at.sidebar.selectbox(key="model").select_index(next(i for i, o in enumerate(labels) if needle in o))
         at = goto(at.run(), "Filter detail")
         no_errors(at)
