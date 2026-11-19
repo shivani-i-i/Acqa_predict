@@ -1572,6 +1572,24 @@ body section[data-testid="stMain"] [data-testid="stMarkdownContainer"] b {
   color: #ffffff !important;
 }
 
+body section[data-testid="stMain"] [data-testid="stMetric"],
+body section[data-testid="stMain"] [data-testid="stVerticalBlockBorderWrapper"] {
+  border: 1px solid rgba(166, 224, 255, .16) !important;
+  border-radius: 16px !important;
+  background: linear-gradient(145deg, rgba(20, 38, 63, .94), rgba(8, 19, 34, .98)) !important;
+  box-shadow: 0 16px 45px rgba(0, 0, 0, .22), inset 0 1px rgba(255,255,255,.04) !important;
+}
+
+body section[data-testid="stMain"] [data-testid="stMetricLabel"],
+body section[data-testid="stMain"] [data-testid="stMetricLabel"] p {
+  color: #a9c5d9 !important;
+}
+
+body section[data-testid="stMain"] [data-testid="stMetricValue"],
+body section[data-testid="stMain"] [data-testid="stMetricValue"] div {
+  color: #f5fbff !important;
+}
+
 /* Keep the command centre readable against the dark product shell. */
 body section[data-testid="stMain"] .ap-commandbar__brand,
 body section[data-testid="stMain"] .ap-commandbar__brand div {
