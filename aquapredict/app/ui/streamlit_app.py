@@ -1477,6 +1477,64 @@ section[data-testid="stMain"] [data-testid="stDataFrame"] {
 .ap-quiet-footer {
   border-top-color: var(--line) !important;
 }
+
+section[data-testid="stMain"] h1,
+section[data-testid="stMain"] h2,
+section[data-testid="stMain"] h3,
+section[data-testid="stMain"] h4,
+section[data-testid="stMain"] h5,
+section[data-testid="stMain"] h6,
+section[data-testid="stMain"] [data-testid="stMarkdownContainer"] h1,
+section[data-testid="stMain"] [data-testid="stMarkdownContainer"] h2,
+section[data-testid="stMain"] [data-testid="stMarkdownContainer"] h3,
+section[data-testid="stMain"] [data-testid="stMarkdownContainer"] h4 {
+  color: #f3f8ff !important;
+}
+
+section[data-testid="stMain"] [data-testid="stCaptionContainer"],
+section[data-testid="stMain"] [data-testid="stCaptionContainer"] p,
+section[data-testid="stMain"] [data-testid="stHelp"] p {
+  color: #a7bfd2 !important;
+}
+
+section[data-testid="stMain"] [data-testid="stRadio"] label,
+section[data-testid="stMain"] [data-testid="stRadio"] label p,
+section[data-testid="stMain"] [data-testid="stRadio"] label span,
+section[data-testid="stMain"] [data-testid="stRadio"] [role="radiogroup"] {
+  color: #dceeff !important;
+}
+
+section[data-testid="stMain"] [data-testid="stMetricLabel"],
+section[data-testid="stMain"] [data-testid="stMetricLabel"] p {
+  color: #a7bfd2 !important;
+}
+
+section[data-testid="stMain"] [data-testid="stMetricValue"],
+section[data-testid="stMain"] [data-testid="stMetricValue"] div {
+  color: #f3f8ff !important;
+}
+
+section[data-testid="stMain"] [data-baseweb="select"] *,
+section[data-testid="stMain"] [data-baseweb="input"] *,
+section[data-testid="stMain"] textarea,
+section[data-testid="stMain"] input {
+  color: #f3f8ff !important;
+}
+
+section[data-testid="stMain"] [data-testid="stTab"] button,
+section[data-testid="stMain"] [data-testid="stTabs"] button {
+  color: #b7cde0 !important;
+}
+
+section[data-testid="stMain"] [data-testid="stTab"] button[aria-selected="true"],
+section[data-testid="stMain"] [data-testid="stTabs"] button[aria-selected="true"] {
+  color: #63e7dd !important;
+}
+
+section[data-testid="stMain"] [data-testid="stAlert"] p,
+section[data-testid="stMain"] [data-testid="stAlert"] div {
+  color: #edf7ff !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
