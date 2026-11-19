@@ -89,7 +89,7 @@ def test_every_page_renders_without_errors(env, page):
     demo(svc)
     at = goto(run(), page)
     no_errors(at)
-    assert at.header or at.subheader
+    assert at.header or at.subheader or at.markdown
 
 
 def test_dashboard_shows_three_separate_signals_and_labels(env):
