@@ -1,0 +1,103 @@
+{
+  "reference_v3": {
+    "train_seed": 1000,
+    "n_households": 120,
+    "trained_at": "2026-11-20T19:46:33+00:00",
+    "max_iter": 200,
+    "sklearn": "1.9.1",
+    "simulator_config": "calibrated"
+  },
+  "person2": {
+    "train_seed": 1000,
+    "n_households": 120,
+    "trained_at": "2026-11-20T19:46:33+00:00",
+    "max_iter": 200,
+    "sklearn": "1.9.1",
+    "simulator_config": "calibrated",
+    "selected_models": {
+      "sediment": "gradient_boosting",
+      "carbon": "volume_rule",
+      "ro_membrane": "gradient_boosting"
+    },
+    "selection_metrics": {
+      "sediment": {
+        "gradient_boosting": {
+          "n": 23774,
+          "mae_days": 64.8894266493072,
+          "median_ae_days": 39.08308115191255,
+          "rmse_days": 98.94464586571702
+        },
+        "volume_rule": {
+          "n": 23774,
+          "mae_days": 133.30930642017162,
+          "median_ae_days": 83.0,
+          "rmse_days": 190.93833872750687
+        },
+        "health_threshold_proxy": {
+          "n": 23774,
+          "mae_days": 127.91711344939142,
+          "median_ae_days": 83.0,
+          "rmse_days": 183.33332427130213
+        },
+        "trend_extrapolation": {
+          "n": 23774,
+          "mae_days": 128.38665659650883,
+          "median_ae_days": 83.64013411737903,
+          "rmse_days": 184.09391728578058
+        }
+      },
+      "carbon": {
+        "gradient_boosting": {
+          "n": 22442,
+          "mae_days": 149.61007792408233,
+          "median_ae_days": 107.7480473222098,
+          "rmse_days": 221.58573960512052
+        },
+        "volume_rule": {
+          "n": 22442,
+          "mae_days": 155.20327342053207,
+          "median_ae_days": 82.0,
+          "rmse_days": 246.2086518308383
+        },
+        "health_threshold_proxy": {
+          "n": 22442,
+          "mae_days": 152.4527058912888,
+          "median_ae_days": 88.64384801436115,
+          "rmse_days": 239.55787929103556
+        },
+        "trend_extrapolation": {
+          "n": 22442,
+          "mae_days": 152.52069526704867,
+          "median_ae_days": 88.603531201929,
+          "rmse_days": 239.98786367354305
+        }
+      },
+      "ro_membrane": {
+        "gradient_boosting": {
+          "n": 22034,
+          "mae_days": 65.80827543370042,
+          "median_ae_days": 38.93767265634298,
+          "rmse_days": 98.99694854927903
+        },
+        "volume_rule": {
+          "n": 22034,
+          "mae_days": 167.18160135185437,
+          "median_ae_days": 113.08075486603508,
+          "rmse_days": 236.6519523479028
+        },
+        "health_threshold_proxy": {
+          "n": 22034,
+          "mae_days": 162.02740279038397,
+          "median_ae_days": 122.09262142270704,
+          "rmse_days": 218.10845378448036
+        },
+        "trend_extrapolation": {
+          "n": 22034,
+          "mae_days": 161.72946001950962,
+          "median_ae_days": 120.75293202841502,
+          "rmse_days": 218.43625101720167
+        }
+      }
+    }
+  }
+}

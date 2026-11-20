@@ -74,7 +74,12 @@ class AquaService:
     def __init__(self, db_path: str = ":memory:", artifact_dir: str | None = None):
         self.db = Database(db_path)
         home = os.environ.get("AQUAPREDICT_HOME", "aquapredict_app_data")
-        self.registry = ModelRegistry(artifact_dir or os.path.join(home, "artifacts"))
+        if artifact_dir:
+            registry_dir = artifact_dir
+        else:
+            repo_artifacts = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "artifacts"))
+            registry_dir = repo_artifacts if os.path.exists(os.path.join(repo_artifacts, "models_meta.json")) else os.path.join(home, "artifacts")
+        self.registry = ModelRegistry(registry_dir)
 
     def online_water_quality(self, site: str = "01646500") -> dict:
         """Return live public water-quality context with source provenance."""

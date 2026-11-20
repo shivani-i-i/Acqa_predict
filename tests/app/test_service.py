@@ -23,6 +23,20 @@ def test_usage_profile_uses_real_unsupervised_models_on_synthetic_population(svc
     assert "filter-life" in profile["honesty"]
 
 
+def test_past_forecast_backfill_is_idempotent_and_fills_missing_days(svc):
+    hid = make(svc, now=60)
+    svc.advance(hid, 100, 10, "trend")
+    hist = svc.history(hid)
+    h = svc.household(hid)
+    start = int(hist["day"].iloc[-1]) - int(hist["age_ro_d"].iloc[-1]) + 14
+    before = len(svc.prediction_history(hid, "ro", "trend"))
+    for day in range(max(start, 14), h["now_day"], 7):
+        svc.forecast(hid, "ro", "trend", day=day, store=True, explain=False)
+    after = svc.prediction_history(hid, "ro", "trend")
+    assert len(after) > before
+    assert after["day"].nunique() == len(after)
+
+
 # ---------------- households, readings, no peeking ----------------
 def test_create_and_read_back_only_up_to_now(svc):
     hid = make(svc)

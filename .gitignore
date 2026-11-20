@@ -11,6 +11,9 @@ data/
 aquapredict/forecasting/examples/data/
 aquapredict/forecasting/artifacts/*.joblib
 *.joblib
+!artifacts/*.joblib
+!artifacts/*.sha256
+!artifacts/models_meta.json
 aquapredict_app_data/
 *.db
 *.sqlite

@@ -14,6 +14,20 @@ an evaluation harness, a FastAPI service, and a Streamlit dashboard.
 
 ## Valid model families and data sources
 
+The repository ships trained synthetic artifacts:
+
+- `reference_v3.pkl` — gradient-boosted reference model with conformal-style
+  intervals and sensor/range gating.
+- `person2_bundle.<stage>.joblib` — per-stage HistGradientBoosting synthetic
+  forecasting bundles.
+- `models_meta.json` — training seed, household count, timestamp, and
+  development-set stage selection.
+
+At runtime AquaPredict prefers these repository artifacts and falls back to
+the transparent Trend baseline only when no repository or local trained model
+is available. The artifacts are synthetic artifacts, not evidence of real
+purifier accuracy, and must be retrained before deployment on real telemetry.
+
 AquaPredict separates three kinds of analysis so that users can distinguish what
 is learned, what is rule-based, and what is merely exploratory:
 

@@ -21,6 +21,18 @@ def test_registry_reports_trained_models_and_defaults_to_best_evidence(trained_d
     assert s.registry.default_model() == "reference_v3"
 
 
+def test_repo_shipped_models_are_loaded_by_default(tmp_path):
+    s = AquaService(str(tmp_path / "a.db"))
+    avail = {m["name"]: m for m in s.models()}
+    assert avail["reference_v3"]["available"]
+    assert avail["person2"]["available"]
+    assert s.registry.default_model() == "reference_v3"
+    hid = s.create_household("shipped", "normal", seed=12, now_day=150)["id"]
+    for model in ("reference_v3", "person2", "trend"):
+        forecast = s.forecast(hid, "sediment", model)
+        assert forecast["status"] in ("interval", "point_only", "withheld")
+
+
 def test_registry_persists_development_stage_selection(tmp_path):
     s = AquaService(str(tmp_path / "a.db"), str(tmp_path / "artifacts"))
     meta = s.registry.train(which=("person2",), n=24, seed=88, max_iter=20, log=lambda *_: None)

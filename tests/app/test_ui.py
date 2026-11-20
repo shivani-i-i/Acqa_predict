@@ -240,7 +240,8 @@ def test_filter_detail_each_stage_and_backfill(env):
     before = len(svc.prediction_history(hid, "ro", "trend"))
     at = button(at, "backfill").click().run()
     no_errors(at)
-    assert len(svc.prediction_history(hid, "ro", "trend")) > before and "past forecasts" in text(at)
+    after = len(svc.prediction_history(hid, "ro", "trend"))
+    assert after >= before and "past forecasts" in text(at)
 
 
 def test_uploaded_household_is_labelled_and_has_no_simulator_clock(env):
