@@ -12,6 +12,38 @@ an evaluation harness, a FastAPI service, and a Streamlit dashboard.
 > not real-world accuracy or production reliability. AquaPredict does not assess
 > water safety, potability, contaminant removal, or health risk.
 
+## Valid model families and data sources
+
+AquaPredict separates three kinds of analysis so that users can distinguish what
+is learned, what is rule-based, and what is merely exploratory:
+
+1. **Regression forecasting**
+   - The main learned model is an actual scikit-learn
+     `HistGradientBoostingRegressor` trained on synthetic household rows.
+   - The target is the simulator's remaining-days-until-filter-criterion value.
+   - Training, calibration, development, and test households are kept separate.
+   - The implementation also uses conformal calibration for uncertainty bands.
+2. **Transparent baselines**
+   - Trend extrapolation, volume rule, and 20% health threshold are real,
+     inspectable baseline methods.
+   - They are never presented as machine-learning breakthroughs or real-world
+     accuracy.
+3. **Unsupervised operating-profile analysis**
+   - The app fits a deterministic Lloyd-style KMeans model to 36 generated
+     synthetic households using standardized mean usage, usage variability,
+     flow, output TDS, and sediment pressure drop.
+   - Standardization is performed only on the synthetic population used for that
+     analysis.
+   - KMeans assigns the current household to a low-use, typical-use, or high-use
+     cluster and reports silhouette quality and distance from the cluster centre.
+   - A robust standardized-distance threshold marks a pattern as rare. This is an
+     exploratory operating-profile model, not a fault detector, filter-life
+     model, or measurement of real equipment.
+
+No LLM, generic chatbot, or external search result is used as a model for
+filter-life training. No Kaggle dataset, USGS observation, or online water
+record is converted into a filter replacement label.
+
 ## Developer verification
 
 From the repository root:

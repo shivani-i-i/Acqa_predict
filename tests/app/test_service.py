@@ -11,6 +11,18 @@ def make(svc, scenario="normal", seed=3, now=90, **kw):
     return svc.create_household("t", scenario, seed=seed, now_day=now, **kw)["id"]
 
 
+def test_usage_profile_uses_real_unsupervised_models_on_synthetic_population(svc):
+    hid = make(svc)
+    profile = svc.usage_profile(hid)
+    assert profile["available"] is True
+    assert profile["data_origin"] == "SYNTHETIC"
+    assert profile["n_households"] >= 12
+    assert profile["n_clusters"] in (2, 3)
+    assert profile["profile"] in ("Low-use profile", "Typical-use profile", "High-use profile")
+    assert isinstance(profile["anomaly"], bool)
+    assert "filter-life" in profile["honesty"]
+
+
 # ---------------- households, readings, no peeking ----------------
 def test_create_and_read_back_only_up_to_now(svc):
     hid = make(svc)

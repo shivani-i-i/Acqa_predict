@@ -174,6 +174,10 @@ def create_app(service: Optional[AquaService] = None) -> FastAPI:
     def monitor(hid: str, model: Optional[str] = None):
         return clean(S_().update_monitoring(hid, model))
 
+    @app.get("/households/{hid}/usage-profile")
+    def usage_profile(hid: str):
+        return clean(S_().usage_profile(hid))
+
     # ------------------------------------------------------------------ planner
     @app.get("/households/{hid}/plan")
     def plan(hid: str, include_closed: bool = True):

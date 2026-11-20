@@ -29,6 +29,7 @@ from . import alerts as AL
 from .db import Database, now_iso, dumps, loads
 from .registry import ModelRegistry, ModelUnavailable, MODEL_CARDS, DISCLAIMER
 from .online_sources import fetch_usgs_observations
+from .analytics import usage_profile
 
 BOOL_COLS = [repl_col(s) for s in STAGES] + ["fault_active", "missing_injected", "source_change_flag"]
 STAGE_LABELS = {"sediment": "Sediment filter", "carbon": "Carbon filter", "ro": "RO membrane"}
@@ -619,6 +620,28 @@ class AquaService:
                 "hypothetical": {k: hyp[k] for k in ("status", "point_days", "interval_days", "reason")},
                 "simulator_truth_base": self.truth(hid, stage),
                 "simulator_truth_hypothetical": None if not np.isfinite(t_alt) else float(t_alt)}
+
+    # =============================================================== unsupervised analytics
+    def usage_profile(self, hid: str) -> dict:
+        """Cluster synthetic operating profiles and score the selected household for anomalies."""
+        h = self.household(hid)
+        pop, _ = generate_dataset(
+            36,
+            mix=None,
+            law="A",
+            seed=4242,
+            cfg=SimConfig.calibrated(),
+            n_days=180,
+        )
+        current = self.history(hid)
+        result = usage_profile(pop, hid, current)
+        result["household_source"] = "uploaded" if h["source"] == "uploaded" else "synthetic"
+        if h["source"] == "uploaded":
+            result["honesty"] = (
+                "Exploratory comparison against a synthetic population. "
+                "The uploaded household is not evidence that the synthetic clusters describe real purifiers."
+            )
+        return result
 
     # =============================================================== dashboard
     def dashboard(self, hid, model=None) -> dict:

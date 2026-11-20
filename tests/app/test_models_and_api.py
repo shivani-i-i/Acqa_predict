@@ -101,6 +101,9 @@ def test_api_end_to_end_flow(client):
     assert set(dash["stages"]) == {"sediment", "carbon", "ro"} and "SYNTHETIC" in dash["data_source_label"]
     f = client.get(f"/households/{hid}/forecast", params={"model": "trend"}).json()
     assert set(f) == {"sediment", "carbon", "ro"} and all("recommendation" in v for v in f.values())
+    profile = client.get(f"/households/{hid}/usage-profile").json()
+    assert profile["available"] is True and profile["data_origin"] == "SYNTHETIC"
+    assert profile["n_clusters"] in (2, 3) and "filter-life" in profile["honesty"]
     assert len(client.get(f"/households/{hid}/predictions").json()) >= 3
     plan = client.get(f"/households/{hid}/plan").json()
     assert plan and client.get(f"/households/{hid}/cost-estimate").json()["total"] >= 0

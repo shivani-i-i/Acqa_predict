@@ -2783,6 +2783,30 @@ def page_models():
                 st.markdown(f"**Limitations:** {m['card']['limits']}")
             st.write(m["trained_with"] or m["reason"] or "baseline (no training)")
     st.markdown("---")
+    ui_subheader("Unsupervised synthetic usage analysis")
+    profile = svc.usage_profile(hid)
+    if profile["available"]:
+        c = st.columns(4)
+        with c[0]:
+            ui_metric("Usage profile", profile["profile"])
+        with c[1]:
+            ui_metric("Anomaly status", "Rare pattern" if profile["anomaly"] else "Typical pattern")
+        with c[2]:
+            ui_metric("Anomaly score", profile["anomaly_score"])
+        with c[3]:
+            ui_metric("Cluster quality", profile["silhouette_score"] if profile["silhouette_score"] is not None else "n/a")
+        st.markdown(
+            f'<div style="background:#edf7fb;border-left:4px solid #075f98;border-radius:10px;'
+            f'padding:.8rem 1rem;color:#17324d !important;">'
+            f'<strong>Interpretation:</strong> {profile["interpretation"]} '
+            f'This result is based on {profile["n_households"]} generated synthetic households and '
+            f'{profile["n_clusters"]} KMeans clusters. It is not a filter-life prediction.</div>',
+            unsafe_allow_html=True,
+        )
+        st.caption(profile["honesty"])
+    else:
+        st.info(profile["reason"])
+    st.markdown("---")
     ui_subheader("Train models")
     st.warning("Takes a few minutes (about 2-4 for 120 households). The page waits until training finishes.")
     c = st.columns(4)

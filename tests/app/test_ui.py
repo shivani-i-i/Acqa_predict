@@ -103,6 +103,17 @@ def test_alerts_page_shows_monitoring_data_when_no_alert_matches(env):
     assert len(at.dataframe) >= 1
 
 
+def test_models_page_shows_unsupervised_usage_analysis(env):
+    svc, _ = env
+    demo(svc)
+    at = goto(run(), "Models")
+    no_errors(at)
+    page_text = text(at)
+    assert "Unsupervised synthetic usage analysis" in page_text
+    assert "KMeans" in page_text
+    assert "not a filter-life prediction" in page_text
+
+
 def test_dashboard_shows_three_separate_signals_and_labels(env):
     svc, _ = env
     demo(svc)
