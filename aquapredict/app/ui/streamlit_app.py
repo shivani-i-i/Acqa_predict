@@ -2549,12 +2549,46 @@ def page_simulator():
     st.button("Run what-if", key="w_btn", on_click=lambda: act(_whatif, "What-if computed."))
     W = st.session_state.get("_whatif")
     if W:
-        st.warning(W["label"])
-        rows = [{"": "Current household", "status": W["base"]["status"], "point (days)": W["base"]["point_days"],
-                 "interval": W["base"]["interval_days"], "simulator truth (days)": (W["simulator_truth_base"] or {}).get("remaining_days_true")},
-                {"": "Hypothetical", "status": W["hypothetical"]["status"], "point (days)": W["hypothetical"]["point_days"],
-                 "interval": W["hypothetical"]["interval_days"], "simulator truth (days)": W["simulator_truth_hypothetical"]}]
-        st.dataframe(pd.DataFrame(rows).astype(str), use_container_width=True)
+        st.markdown(
+            '<div class="ap-subheader" role="heading" aria-level="3" '
+            'style="background:#fff3d6;color:#6b4a12 !important;border-left:4px solid #d7a21b;'
+            'border-radius:10px;padding:.7rem 1rem;margin:.8rem 0;font-weight:700;">'
+            'HYPOTHETICAL scenario · re-simulated synthetic world, not your purifier</div>',
+            unsafe_allow_html=True,
+        )
+        base = W["base"]
+        hyp = W["hypothetical"]
+        base_point = "--" if base["point_days"] is None else f"{base['point_days']:.0f} days"
+        hyp_point = "--" if hyp["point_days"] is None else f"{hyp['point_days']:.0f} days"
+        base_interval = "--" if not base["interval_days"] else f"{base['interval_days'][0]:.0f}-{base['interval_days'][1]:.0f} days"
+        hyp_interval = "--" if not hyp["interval_days"] else f"{hyp['interval_days'][0]:.0f}-{hyp['interval_days'][1]:.0f} days"
+        base_truth = (W["simulator_truth_base"] or {}).get("remaining_days_true")
+        truth_base = "--" if base_truth is None else f"{base_truth:.0f} days"
+        truth_hyp = "--" if W["simulator_truth_hypothetical"] is None else f"{W['simulator_truth_hypothetical']:.0f} days"
+        cards = st.columns(2)
+        with cards[0]:
+            ui_metric("Current household", f"{base['status'].replace('_', ' ').title()} · {base_point}")
+        with cards[1]:
+            ui_metric("Hypothetical result", f"{hyp['status'].replace('_', ' ').title()} · {hyp_point}")
+        st.markdown(
+            '<div style="color:#17324d !important;background:#edf7fb;border:1px solid #d5e2eb;'
+            'border-radius:10px;padding:.75rem 1rem;margin:.6rem 0;">'
+            '<strong>Interpret this comparison:</strong> forecast outcomes are shown only when the model '
+            'produced a usable estimate. A <strong>withheld</strong> result means the service intentionally '
+            'did not return an unqualified maintenance number.</div>',
+            unsafe_allow_html=True,
+        )
+        rows = [
+            {"Scenario": "Current household", "Status": base["status"].replace("_", " ").title(),
+             "Point estimate": base_point, "Calibrated interval": base_interval,
+             "Synthetic remaining life": truth_base,
+             "Reason": base["reason"] or "No withheld reason"},
+            {"Scenario": "Hypothetical", "Status": hyp["status"].replace("_", " ").title(),
+             "Point estimate": hyp_point, "Calibrated interval": hyp_interval,
+             "Synthetic remaining life": truth_hyp,
+             "Reason": hyp["reason"] or "No withheld reason"},
+        ]
+        st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
     st.markdown("---")
     ui_subheader("Latest readings")
     st.dataframe(svc.readings(hid, last=20), use_container_width=True)

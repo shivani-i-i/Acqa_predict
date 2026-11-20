@@ -1,11 +1,13 @@
 """Drives the real Streamlit app headlessly (streamlit.testing.AppTest): clicks the actual buttons, checks the database."""
 import os
 import shutil
+
 import pytest
 import streamlit as st
 from streamlit.testing.v1 import AppTest
 
 from aquapredict.app.service import AquaService
+
 from .conftest import uploaded_rows
 
 APP = os.path.join(os.path.dirname(__file__), "..", "..", "aquapredict", "app", "ui", "streamlit_app.py")
@@ -164,7 +166,9 @@ def test_what_if_runs_and_is_labelled_hypothetical(env):
     at = goto(run(), "Simulator & what-if")
     at = button(at, "w_btn").click().run()
     no_errors(at)
-    assert "HYPOTHETICAL" in " ".join(w.value for w in at.warning)
+    assert "HYPOTHETICAL" in text(at)
+    assert "not your purifier" in text(at)
+    assert "withheld" in text(at).lower() or "Point estimate" in text(at)
     assert svc.household(hid)["overrides"] == {}                    # nothing saved
     assert at.dataframe                                              # comparison table is shown
 
