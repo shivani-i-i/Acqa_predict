@@ -2056,7 +2056,7 @@ if households:
         '<div class="ap-utilitybar__left"><strong>Purifier care centre</strong>'
         '<span>Monitor your purifier. Plan service with confidence.</span></div>'
         '<div class="ap-utilitybar__right"><span>Help & support</span><span>About AquaPredict</span>'
-        '<span class="ap-utilitybar__version">UI refreshed</span></div>'
+        '<span class="ap-utilitybar__version">BUILD 2026-11-21 · SYNTHETIC</span></div>'
         '</div>',
         unsafe_allow_html=True,
     )
