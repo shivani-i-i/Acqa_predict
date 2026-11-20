@@ -1882,6 +1882,47 @@ body section[data-testid="stMain"] [data-baseweb="tab"][aria-selected="true"] * 
   color: #075f98 !important;
   -webkit-text-fill-color: #075f98 !important;
 }
+
+/* Alert and evidence panels: white text belongs only on dark surfaces. */
+body section[data-testid="stMain"] [data-testid="stAlert"],
+body section[data-testid="stMain"] [data-testid="stAlert"] * {
+  color: #f8fbff !important;
+  opacity: 1 !important;
+  -webkit-text-fill-color: #f8fbff !important;
+}
+
+body section[data-testid="stMain"] [data-testid="stAlert"] strong,
+body section[data-testid="stMain"] [data-testid="stAlert"] b {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+/* Streamlit warnings/info variants must remain readable on the pale workspace. */
+body section[data-testid="stMain"] [data-testid="stNotification"],
+body section[data-testid="stMain"] [data-testid="stNotification"] * {
+  color: #17324d !important;
+  opacity: 1 !important;
+  -webkit-text-fill-color: #17324d !important;
+}
+
+/* Final tab selector coverage for both Streamlit and BaseWeb-generated markup. */
+body section[data-testid="stMain"] button[role="tab"],
+body section[data-testid="stMain"] button[role="tab"] *,
+body section[data-testid="stMain"] [role="tab"] button,
+body section[data-testid="stMain"] [role="tab"] button * {
+  color: #294d6a !important;
+  opacity: 1 !important;
+  -webkit-text-fill-color: #294d6a !important;
+}
+
+body section[data-testid="stMain"] button[role="tab"][aria-selected="true"],
+body section[data-testid="stMain"] button[role="tab"][aria-selected="true"] *,
+body section[data-testid="stMain"] [role="tab"][aria-selected="true"] button,
+body section[data-testid="stMain"] [role="tab"][aria-selected="true"] button * {
+  color: #075f98 !important;
+  border-bottom-color: #075f98 !important;
+  -webkit-text-fill-color: #075f98 !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -2291,14 +2332,39 @@ def page_filter_detail():
         ui_metric("Sensor health", BADGE[fc["sensor_health"]])
     with c[2]:
         ui_metric("Model", labels[fc["model"]])
-    st.write(f"**Reliability:** {fc['reliability']}")
-    st.caption(f"Interval basis: {fc['interval_status'] or 'n/a'}  ·  model version: {fc['model_version']}")
+    st.markdown(
+        f'<div style="color:#17324d !important;-webkit-text-fill-color:#17324d !important;'
+        f'margin:.75rem 0 .35rem;"><strong>Reliability:</strong> {fc["reliability"]}</div>',
+        unsafe_allow_html=True,
+    )
+    st.markdown(
+        f'<div style="color:#52718b !important;-webkit-text-fill-color:#52718b !important;'
+        f'font-size:.82rem;margin-bottom:.6rem;">Interval basis: '
+        f'{fc["interval_status"] or "n/a"} · model version: {fc["model_version"]}</div>',
+        unsafe_allow_html=True,
+    )
     if stage == "carbon":
-        st.info("Carbon has no direct sensor signal in this synthetic simulator. AquaPredict uses a volume rule and hides a confidence interval.")
+        st.markdown(
+            '<div style="background:#123d61;border-radius:12px;padding:.85rem 1rem;margin:.5rem 0;'
+            'color:#ffffff !important;-webkit-text-fill-color:#ffffff !important;">'
+            '<strong>Carbon has no direct sensor signal in this synthetic simulator.</strong> '
+            'AquaPredict uses a volume rule and hides a confidence interval.</div>',
+            unsafe_allow_html=True,
+        )
     if fc["reason"]:
         st.warning(f"Forecast withheld or limited: {fc['reason']}")
-    st.info(f"**Recommended next action:** {fc['recommendation']}")
-    st.markdown(f"**Filter condition:** {fc['indicator']['text'] or 'not enough data'}")
+    st.markdown(
+        f'<div style="background:#edf7fb;border-left:4px solid #075f98;border-radius:10px;'
+        f'padding:.8rem 1rem;margin:.55rem 0;color:#17324d !important;">'
+        f'<strong>Recommended next action:</strong> {fc["recommendation"]}</div>',
+        unsafe_allow_html=True,
+    )
+    st.markdown(
+        f'<div style="color:#17324d !important;-webkit-text-fill-color:#17324d !important;'
+        f'margin:.45rem 0;"><strong>Filter condition:</strong> '
+        f'{fc["indicator"]["text"] or "not enough data"}</div>',
+        unsafe_allow_html=True,
+    )
     t1, t2, t3, t4 = st.tabs(["Why this forecast", "Sensor and data quality", "Trends", "Simulator truth (demo)"])
     with t1:
         if fc["drivers"]:
