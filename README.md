@@ -12,6 +12,21 @@ an evaluation harness, a FastAPI service, and a Streamlit dashboard.
 > not real-world accuracy or production reliability. AquaPredict does not assess
 > water safety, potability, contaminant removal, or health risk.
 
+## Developer verification
+
+From the repository root:
+
+```bash
+python -m pip install -r requirements-full.txt
+python -m pip install -e ".[dev]"
+ruff check aquapredict tests
+pytest -q
+```
+
+GitHub Actions runs the same lint and test gates on `main`, `streamlit-host`, and
+pull requests. The full test suite is synthetic and does not require live purifier
+hardware or real-world filter-life ground truth.
+
 ## What the project provides
 
 ### 1. Synthetic household simulator

@@ -1,6 +1,7 @@
 """AquaPredict dashboard (Streamlit). Run from the repo root:   streamlit run aquapredict/app/ui/streamlit_app.py
 Every control calls the real service layer (simulator, forecasters, rule checks, SQLite). Nothing is mocked."""
 from __future__ import annotations
+
 import json
 import os
 import sys
@@ -9,17 +10,24 @@ _ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."
 if _ROOT not in sys.path:                      # lets `streamlit run` work without installing the package
     sys.path.insert(0, _ROOT)
 
-import matplotlib
-matplotlib.use("Agg")
-import matplotlib.pyplot as plt
-import numpy as np
-import pandas as pd
-import streamlit as st
+import matplotlib  # noqa: E402
 
-from aquapredict.app.service import AquaService, NotFound, BadRequest, Conflict, STAGE_LABELS
-from aquapredict.app.registry import ModelUnavailable, DISCLAIMER
-from aquapredict.planner.cost import CostConfig
-from aquapredict.schema import STAGES
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt  # noqa: E402
+import numpy as np  # noqa: E402
+import pandas as pd  # noqa: E402
+import streamlit as st  # noqa: E402
+
+from aquapredict.app.registry import ModelUnavailable  # noqa: E402
+from aquapredict.app.service import (  # noqa: E402
+    STAGE_LABELS,
+    AquaService,
+    BadRequest,
+    Conflict,
+    NotFound,
+)
+from aquapredict.planner.cost import CostConfig  # noqa: E402
+from aquapredict.schema import STAGES  # noqa: E402
 
 PAGES = ["Dashboard", "Filter detail", "Simulator & what-if", "Alerts", "Planner & costs", "Validation lab", "Models", "Data & export"]
 SENSOR_OPTIONS = ["dp_sediment_bar", "flow_Lpm", "out_tds_ppm", "feed_tds_ppm", "temp_C", "inlet_bar"]
@@ -1002,6 +1010,19 @@ div[data-testid="stAlert"] [data-testid="stMarkdownContainer"] {
   .ap-hero { padding: 1.25rem; border-radius: 18px; }
   .ap-spatial { min-height: 31rem; }
   .ap-node { min-width: 7.5rem; font-size: .62rem; }
+  section[data-testid="stMain"] [data-testid="stHorizontalBlock"] {
+    flex-wrap: wrap;
+  }
+  section[data-testid="stMain"] [data-testid="stHorizontalBlock"] [data-testid="column"] {
+    width: 100% !important;
+    flex: 1 1 100% !important;
+  }
+  .ap-explicit-metric {
+    width: 100%;
+  }
+  .ap-subheader {
+    font-size: 1.08rem !important;
+  }
 }
 
 /* Public-service portal skin: bright, practical, and data-first. */
@@ -1960,7 +1981,6 @@ def spatial_twin(D, latest, focus):
 
 
 def day_to_date(hid, day):
-    h = svc.household(hid)
     r = svc.readings(hid, last=1)
     d0 = pd.Timestamp(r["date"].iloc[-1]) - pd.Timedelta(days=int(r["day"].iloc[-1]))
     return (d0 + pd.Timedelta(days=int(day))).date().isoformat()
@@ -2161,11 +2181,15 @@ def page_dashboard():
         st.markdown("#### Data health & provenance")
         st.caption("A quick check of the readings currently supporting the forecast. This does not measure water safety.")
         health_cols = st.columns(4)
-        health_cols[0].metric("Source", "Synthetic" if D["household"]["source"] == "synthetic" else "Uploaded")
-        health_cols[1].metric("Last reading day", dq["last_day"])
-        health_cols[2].metric("Idle today", "Yes" if dq["idle_today"] else "No")
+        with health_cols[0]:
+            ui_metric("Source", "Synthetic" if D["household"]["source"] == "synthetic" else "Uploaded")
+        with health_cols[1]:
+            ui_metric("Last reading day", dq["last_day"])
+        with health_cols[2]:
+            ui_metric("Idle today", "Yes" if dq["idle_today"] else "No")
         missing = [v for v in dq["missing_share_last_14_active_days"].values() if v is not None]
-        health_cols[3].metric("Missing sensor share", f"{max(missing) * 100:.0f}%" if missing else "--")
+        with health_cols[3]:
+            ui_metric("Missing sensor share", f"{max(missing) * 100:.0f}%" if missing else "--")
         if stale:
             st.warning("Stale sensors: " + ", ".join(f"{name} ({days}d)" for name, days in stale.items()))
         else:
@@ -2183,7 +2207,8 @@ def page_dashboard():
         v = D["stages"][s]
         with st.container(border=True):
             a, b = st.columns([2, 3])
-            a.subheader(v["label"])
+            with a:
+                ui_subheader(v["label"])
             cond = v["condition"]
             a.markdown(f"**Condition:** {pct(cond['progress'])} of the way to the assumed criterion" if cond["available"]
                        else "**Condition:** not enough data yet")
@@ -2251,7 +2276,8 @@ def page_filter_detail():
     try:
         fc = svc.forecast(hid, stage, model, explain=True)
     except ERRORS as e:
-        st.error(str(e)); return
+        st.error(str(e))
+        return
     st.markdown(f'<div class="ap-forecast-title" style="color:#17324d !important;'
                 f'-webkit-text-fill-color:#17324d !important;">{fmt_window(fc)}</div>',
                 unsafe_allow_html=True)
@@ -2304,7 +2330,9 @@ def page_filter_detail():
         hist = svc.history(hid)
         d, y, label, crit = indicator_series(hist, stage)
         fig, ax = plt.subplots(1, 2, figsize=(11, 3.4))
-        ax[0].plot(d, y, ".", ms=3); ax[0].set_title(label, fontsize=9); ax[0].set_xlabel("day")
+        ax[0].plot(d, y, ".", ms=3)
+        ax[0].set_title(label, fontsize=9)
+        ax[0].set_xlabel("day")
         if crit:
             ax[0].axhline(crit, ls="--", c="r", lw=.8)
         ph = svc.prediction_history(hid, stage, model)
@@ -2314,8 +2342,10 @@ def page_filter_detail():
             if ph["lo"].notna().any():
                 ax[1].fill_between(ph["day"], ph["day"] + ph["lo"], ph["day"] + ph["hi"], alpha=.2, label="interval")
             ax[1].legend(fontsize=7)
-        ax[1].set_title("predicted replacement day over time", fontsize=9); ax[1].set_xlabel("forecast made on day")
-        st.pyplot(fig); plt.close(fig)
+        ax[1].set_title("predicted replacement day over time", fontsize=9)
+        ax[1].set_xlabel("forecast made on day")
+        st.pyplot(fig)
+        plt.close(fig)
         st.button("Backfill forecast history for this stage (past days only)", key="backfill", on_click=lambda: act(
             backfill, lambda n: f"Computed {n} past forecasts.", stage))
     with t4:
@@ -2326,7 +2356,7 @@ def page_filter_detail():
             st.write(T["note"])
         else:
             st.warning("DEMO ONLY: this is the simulator's hidden ground truth. It does not exist for real purifiers.")
-            st.metric("True days until the criterion is reached", f"{T['remaining_days_true']:.0f}")
+            ui_metric("True days until the criterion is reached", f"{T['remaining_days_true']:.0f} d")
             if fc["point_days"] is not None:
                 st.write(f"Forecast point estimate: {fc['point_days']:.0f} days (error {fc['point_days'] - T['remaining_days_true']:+.0f} d).")
 
@@ -2400,7 +2430,8 @@ def page_simulator():
         return
     H = svc.household(hid)
     if H["source"] != "synthetic":
-        st.info("Simulator controls apply to synthetic households only."); return
+        st.info("Simulator controls apply to synthetic households only.")
+        return
     ui_subheader(f"Controls for {hid}")
     st.markdown("**Record that you replaced a filter today** (re-runs the simulator: earlier readings are unchanged, the new filter follows)")
     cols = st.columns(3)
@@ -2489,8 +2520,11 @@ def page_alerts():
             st.text_input("Note (optional)", key=f"note_{a['id']}")
             b = st.columns(3)
             for col, action in zip(b, ("acknowledge", "resolve", "dismiss")):
-                col.button(action.capitalize(), key=f"{action}_{a['id']}", on_click=lambda i=a["id"], ac=action: act(
-                    svc.alert_action, f"Alert {i}: {ac}d.".replace("ee", "e"), i, ac, st.session_state.get(f"note_{i}") or None))
+                past_tense = {"acknowledge": "acknowledged", "resolve": "resolved", "dismiss": "dismissed"}[action]
+                col.button(action.capitalize(), key=f"{action}_{a['id']}",
+                           on_click=lambda i=a["id"], ac=action, pt=past_tense: act(
+                               svc.alert_action, f"Alert {i}: {pt}.", i, ac,
+                               st.session_state.get(f"note_{i}") or None))
 
 
 def page_planner():
@@ -2529,7 +2563,7 @@ def page_planner():
     est = svc.cost_estimate(hid, int(horizon), CostConfig(replacement_cost=prices, service_visit_cost=visit))
     if est["lines"]:
         st.dataframe(pd.DataFrame(est["lines"]).astype(str), use_container_width=True)
-    st.metric(f"Estimated spend in the next {horizon} days", f"Rs {est['total']:,.0f}", help="parts + one service visit")
+    ui_metric(f"Estimated spend in the next {horizon} days", f"Rs {est['total']:,.0f}")
     st.caption("Fixed-schedule vs forecast-based policy costs, with price sensitivity, are computed in the Validation lab on simulated households.")
 
 
@@ -2561,10 +2595,14 @@ def page_validation():
         F = st.session_state.get("_failsafe")
         if F:
             c = st.columns(4)
-            c[0].metric("Forecast status", F["status"].replace("_", " "))
-            c[1].metric("Sensor health", F["sensor_health"].replace("_", " "))
-            c[2].metric("Point estimate", "--" if F["point_days"] is None else f"{F['point_days']:.0f} d")
-            c[3].metric("Sensor events", len(F["sensor_events"]))
+            with c[0]:
+                ui_metric("Forecast status", F["status"].replace("_", " "))
+            with c[1]:
+                ui_metric("Sensor health", F["sensor_health"].replace("_", " "))
+            with c[2]:
+                ui_metric("Point estimate", "--" if F["point_days"] is None else f"{F['point_days']:.0f} d")
+            with c[3]:
+                ui_metric("Sensor events", len(F["sensor_events"]))
             if F["status"] == "withheld" or F["sensor_health"] == "fault_suspected":
                 st.warning(f"Fail-safe response: {F['reason'] or F['reliability']}. No unqualified maintenance number should be used.")
             else:
@@ -2580,8 +2618,13 @@ def page_validation():
     c[3].checkbox("Calibrated simulator", True, key="v_cal")
     def _run():
         ss = st.session_state
-        ss["_val"] = svc.run_validation(int(ss["v_n"]), int(ss["v_seed"]), ["trend", "volume_rule", "health_20pct"] + list(ss["v_methods"]),
-                                        ss["v_cal"])
+        with st.spinner("Running fresh synthetic households and comparing all selected methods..."):
+            ss["_val"] = svc.run_validation(
+                int(ss["v_n"]),
+                int(ss["v_seed"]),
+                ["trend", "volume_rule", "health_20pct"] + list(ss["v_methods"]),
+                ss["v_cal"],
+            )
     st.button("Run validation", key="v_run", on_click=lambda: act(_run, lambda _: "Validation finished."))
     R = st.session_state.get("_val")
     if R:
@@ -2625,9 +2668,17 @@ def page_models():
     c[1].number_input("Households", 24, 400, 120, key="t_n")
     c[2].number_input("Training seed", 0, 10**6, 1000, key="t_seed")
     c[3].number_input("Boosting iterations", 20, 600, 200, key="t_iter")
-    st.button("Train", key="t_btn", on_click=lambda: act(
-        lambda: svc.registry.train(tuple(st.session_state["t_which"]), int(st.session_state["t_n"]), int(st.session_state["t_seed"]),
-                                   int(st.session_state["t_iter"]), log=lambda *_: None), "Training finished."))
+    def _train():
+        ss = st.session_state
+        with st.spinner("Training selected models on fresh synthetic households..."):
+            return svc.registry.train(
+                tuple(ss["t_which"]),
+                int(ss["t_n"]),
+                int(ss["t_seed"]),
+                int(ss["t_iter"]),
+                log=lambda *_: None,
+            )
+    st.button("Train", key="t_btn", on_click=lambda: act(_train, "Training finished."))
 
 
 def page_data():
@@ -2663,7 +2714,7 @@ def page_data():
         st.caption("CSV with one row per day: `day` (0,1,2,...), `usage_L`, and any of "
                    "`dp_sediment_bar, flow_Lpm, out_tds_ppm, feed_tds_ppm, temp_C, inlet_bar` (blank = missing). Filter ages are derived from the "
                    "replacement days you list. At least 15 days. Nothing is repaired silently; invalid files are rejected with reasons.")
-        up = st.file_uploader("Telemetry CSV", type=["csv"], key="up_file")
+        st.file_uploader("Telemetry CSV", type=["csv"], key="up_file")
         st.text_input("Household name", "Uploaded purifier", key="up_name")
         st.text_input("Replacement days (JSON, e.g. {\"ro\": [120]})", "{}", key="up_repl")
         def _ingest():
@@ -2681,7 +2732,7 @@ def page_data():
 
 # ------------------------------------------------------------------ dispatch
 if not households:
-    st.title("💧 AquaPredict")
+    ui_header("AquaPredict")
     st.info("No households yet. Create a synthetic demo household to begin.")
     page_simulator()
 else:
