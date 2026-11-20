@@ -28,6 +28,23 @@ the transparent Trend baseline only when no repository or local trained model
 is available. The artifacts are synthetic artifacts, not evidence of real
 purifier accuracy, and must be retrained before deployment on real telemetry.
 
+### Fresh-seed synthetic model check
+
+A fresh validation run used seed `5151`, 20 households, and a new test split
+that was not used to train the shipped artifacts.
+
+| Model | Median absolute error, 0-60 true days left | Late warning rate | Premature warning rate | Interval coverage | Median interval width |
+|---|---:|---:|---:|---:|---:|
+| **Reference v3 (shipped)** | **14.0 d** | **27.4%** | **32.1%** | 87.5% | 154.5 d all / 45.6 d primary |
+| Person 2 (shipped) | 21.2 d | 32.4% | 55.1% | 92.6% | 223.5 d all / 77.1 d primary |
+| Trend baseline | 18.4 d | 35.8% | 21.3% | n/a | n/a |
+| Volume-rule baseline | 35.9 d | 53.0% | 34.8% | n/a | n/a |
+| 20% health baseline | 27.3 d | 45.6% | 43.6% | n/a | n/a |
+
+This table proves model behavior on the project simulator. It does **not**
+prove real purifier accuracy. It also shows the reference model has useful
+synthetic point performance but interval width remains larger than desired.
+
 AquaPredict separates three kinds of analysis so that users can distinguish what
 is learned, what is rule-based, and what is merely exploratory:
 
