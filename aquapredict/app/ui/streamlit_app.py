@@ -2259,7 +2259,16 @@ def page_dashboard():
             b.markdown(f"### {fmt_window(v)}")
             if v["reason"]:
                 b.warning(f"Why withheld: {v['reason']}")
-            b.write(v["recommendation"])
+            recommendation = str(v["recommendation"] or "No action needed yet.")
+            b.markdown(
+                f'<div style="background:#edf7fb;border-left:4px solid #075f98;border-radius:10px;'
+                f'padding:.75rem 1rem;margin:.45rem 0;color:#17324d !important;">'
+                f'<strong style="color:#17324d !important;-webkit-text-fill-color:#17324d !important;">'
+                f'Recommended next action:</strong> '
+                f'<span style="color:#17324d !important;-webkit-text-fill-color:#17324d !important;">'
+                f'{recommendation}</span></div>',
+                unsafe_allow_html=True,
+            )
             b.button("Open details", key=f"open_{s}", on_click=goto, args=("Filter detail", s))
     st.markdown('<div class="ap-section-label">Action queue</div>', unsafe_allow_html=True)
     left, right = st.columns([1.15, .85])
@@ -2332,17 +2341,27 @@ def page_filter_detail():
         ui_metric("Sensor health", BADGE[fc["sensor_health"]])
     with c[2]:
         ui_metric("Model", labels[fc["model"]])
-    st.markdown(
-        f'<div style="color:#17324d !important;-webkit-text-fill-color:#17324d !important;'
-        f'margin:.75rem 0 .35rem;"><strong>Reliability:</strong> {fc["reliability"]}</div>',
-        unsafe_allow_html=True,
-    )
-    st.markdown(
-        f'<div style="color:#52718b !important;-webkit-text-fill-color:#52718b !important;'
-        f'font-size:.82rem;margin-bottom:.6rem;">Interval basis: '
-        f'{fc["interval_status"] or "n/a"} · model version: {fc["model_version"]}</div>',
-        unsafe_allow_html=True,
-    )
+    detail_cards = st.columns(2)
+    with detail_cards[0]:
+        st.markdown(
+            f'<div class="ap-explicit-metric" style="background:#ffffff;border:1px solid #d5e2eb;'
+            f'border-radius:12px;padding:.8rem 1rem;margin:.35rem 0;">'
+            f'<div style="color:#52718b;font-size:.76rem;font-weight:700;text-transform:uppercase;">Reliability</div>'
+            f'<div style="color:#17324d !important;-webkit-text-fill-color:#17324d !important;'
+            f'font-size:1rem;font-weight:700;margin-top:.35rem;">{fc["reliability"]}</div></div>',
+            unsafe_allow_html=True,
+        )
+    with detail_cards[1]:
+        st.markdown(
+            f'<div class="ap-explicit-metric" style="background:#ffffff;border:1px solid #d5e2eb;'
+            f'border-radius:12px;padding:.8rem 1rem;margin:.35rem 0;">'
+            f'<div style="color:#52718b;font-size:.76rem;font-weight:700;text-transform:uppercase;">Interval basis</div>'
+            f'<div style="color:#17324d !important;-webkit-text-fill-color:#17324d !important;'
+            f'font-size:.92rem;font-weight:700;margin-top:.35rem;">'
+            f'{fc["interval_status"] or "No calibrated interval"} · '
+            f'model: {fc["model_version"]}</div></div>',
+            unsafe_allow_html=True,
+        )
     if stage == "carbon":
         st.markdown(
             '<div style="background:#123d61;border-radius:12px;padding:.85rem 1rem;margin:.5rem 0;'
@@ -2356,7 +2375,10 @@ def page_filter_detail():
     st.markdown(
         f'<div style="background:#edf7fb;border-left:4px solid #075f98;border-radius:10px;'
         f'padding:.8rem 1rem;margin:.55rem 0;color:#17324d !important;">'
-        f'<strong>Recommended next action:</strong> {fc["recommendation"]}</div>',
+        f'<strong style="color:#17324d !important;-webkit-text-fill-color:#17324d !important;">'
+        f'Recommended next action:</strong> '
+        f'<span style="color:#17324d !important;-webkit-text-fill-color:#17324d !important;">'
+        f'{fc["recommendation"]}</span></div>',
         unsafe_allow_html=True,
     )
     st.markdown(
